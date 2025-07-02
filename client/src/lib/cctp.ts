@@ -78,17 +78,25 @@ export class CCTPService {
       const supportedChains = this.getSupportedChains();
       const sourceChain = supportedChains.find(c => c.id === chainId);
       
+      console.log('Current chain ID:', chainId);
+      console.log('Source chain:', sourceChain);
+      console.log('Is testnet:', this.isTestnet);
+      
       if (!sourceChain) {
-        throw new Error('Unsupported source chain');
+        throw new Error(`Unsupported source chain: ${chainId}. Supported chains: ${supportedChains.map(c => c.name).join(', ')}`);
       }
 
       const destChain = supportedChains.find(c => c.id === destinationChain);
       if (!destChain) {
-        throw new Error('Unsupported destination chain');
+        throw new Error(`Unsupported destination chain: ${destinationChain}`);
       }
 
       const contracts = this.getContracts();
       const amount = parseUnits(recipient.amount, 6);
+      
+      console.log('Burn amount:', amount.toString());
+      console.log('Destination chain:', destChain.name);
+      console.log('CCTP domain:', destChain.cctpDomain);
 
       // USDC contract ABI
       const usdcAbi = [
@@ -99,18 +107,33 @@ export class CCTPService {
       const usdcContract = new Contract(sourceChain.usdcAddress, usdcAbi, this.signer);
       const signerAddress = await this.signer.getAddress();
 
-      // Check and approve TokenMessengerV2
-      const allowance = await usdcContract.allowance(signerAddress, contracts.tokenMessengerV2);
-
-      if (allowance < amount) {
-        const approveTx = await usdcContract.approve(contracts.tokenMessengerV2, amount);
-        await approveTx.wait();
+      // Check USDC balance first
+      const balanceAbi = ['function balanceOf(address account) view returns (uint256)'];
+      const balanceContract = new Contract(sourceChain.usdcAddress, balanceAbi, this.provider);
+      const balance = await balanceContract.balanceOf(signerAddress);
+      
+      console.log('USDC balance:', ethers.formatUnits(balance, 6));
+      console.log('Required amount:', ethers.formatUnits(amount, 6));
+      
+      if (balance < amount) {
+        throw new Error(`Insufficient USDC balance. You have ${ethers.formatUnits(balance, 6)} USDC but need ${ethers.formatUnits(amount, 6)} USDC`);
       }
 
-      // TokenMessengerV2 ABI for CCTP V2
+      // Check and approve TokenMessengerV2
+      const allowance = await usdcContract.allowance(signerAddress, contracts.tokenMessengerV2);
+      console.log('Current allowance:', ethers.formatUnits(allowance, 6));
+
+      if (allowance < amount) {
+        console.log('Approving TokenMessengerV2 for amount:', ethers.formatUnits(amount, 6));
+        const approveTx = await usdcContract.approve(contracts.tokenMessengerV2, amount);
+        await approveTx.wait();
+        console.log('Approval transaction completed');
+      }
+
+      // TokenMessengerV2 ABI for CCTP V2 - Updated with correct signatures
       const tokenMessengerV2Abi = [
-        'function depositForBurnWithCaller(uint256 amount, uint32 destinationDomain, bytes32 mintRecipient, address burnToken, bytes32 destinationCaller) external returns (uint64 nonce)',
-        'function depositForBurn(uint256 amount, uint32 destinationDomain, bytes32 mintRecipient, address burnToken) external returns (uint64 nonce)'
+        'function depositForBurn(uint256 amount, uint32 destinationDomain, bytes32 mintRecipient, address burnToken, bytes32 destinationCaller, uint256 maxFee, uint32 minFinalityThreshold) external returns (uint64 nonce)',
+        'function depositForBurnWithHook(uint256 amount, uint32 destinationDomain, bytes32 mintRecipient, address burnToken, bytes32 destinationCaller, uint256 maxFee, uint32 minFinalityThreshold, bytes calldata hookData) external returns (uint64 nonce)'
       ];
 
       const tokenMessengerV2 = new Contract(
@@ -120,25 +143,56 @@ export class CCTPService {
       );
 
       const mintRecipient = ethers.zeroPadValue(recipient.address, 32);
+      const destinationCaller = ethers.zeroPadValue('0x0000000000000000000000000000000000000000', 32); // Anyone can call receiveMessage
       
       let burnTx;
       if (transferMethod === 'fast') {
-        // For fast transfers, use depositForBurnWithCaller with specific destination caller
-        const destinationCaller = ethers.zeroPadValue(recipient.address, 32);
-        burnTx = await tokenMessengerV2.depositForBurnWithCaller(
-          amount,
-          destChain.cctpDomain,
-          mintRecipient,
-          sourceChain.usdcAddress,
-          destinationCaller
-        );
-      } else {
-        // Standard transfer
+        // For fast transfers, use depositForBurn with maxFee and lower finality threshold
+        const maxFee = parseUnits('1', 6); // 1 USDC max fee for fast transfer
+        const minFinalityThreshold = 200; // Lower threshold for fast transfer
+        
+        console.log('Calling depositForBurn for fast transfer with params:', {
+          amount: amount.toString(),
+          destinationDomain: destChain.cctpDomain,
+          mintRecipient: mintRecipient,
+          burnToken: sourceChain.usdcAddress,
+          destinationCaller: destinationCaller,
+          maxFee: maxFee.toString(),
+          minFinalityThreshold
+        });
+        
         burnTx = await tokenMessengerV2.depositForBurn(
           amount,
           destChain.cctpDomain,
           mintRecipient,
-          sourceChain.usdcAddress
+          sourceChain.usdcAddress,
+          destinationCaller,
+          maxFee,
+          minFinalityThreshold
+        );
+      } else {
+        // Standard transfer - no fee, higher finality threshold
+        const maxFee = 0; // No fee for standard transfer
+        const minFinalityThreshold = 2000; // Standard finality threshold
+        
+        console.log('Calling depositForBurn for standard transfer with params:', {
+          amount: amount.toString(),
+          destinationDomain: destChain.cctpDomain,
+          mintRecipient: mintRecipient,
+          burnToken: sourceChain.usdcAddress,
+          destinationCaller: destinationCaller,
+          maxFee,
+          minFinalityThreshold
+        });
+        
+        burnTx = await tokenMessengerV2.depositForBurn(
+          amount,
+          destChain.cctpDomain,
+          mintRecipient,
+          sourceChain.usdcAddress,
+          destinationCaller,
+          maxFee,
+          minFinalityThreshold
         );
       }
 
