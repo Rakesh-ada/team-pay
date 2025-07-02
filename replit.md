@@ -98,7 +98,17 @@ This is a modern web application for bulk USDC transfers using Circle's Cross-Ch
 
 ```
 Changelog:
-- July 02, 2025. Initial setup
+- July 02, 2025: Initial setup with CCTP V2 bulk transfer functionality
+- July 02, 2025: Fixed same-domain transfer validation and network change error handling
+- July 02, 2025: Added 8 additional testnet chains for comprehensive cross-chain testing:
+  • Avalanche Fuji (domain 1)
+  • OP Sepolia (domain 2) 
+  • Polygon Amoy (domain 7)
+  • Linea Sepolia (domain 9)
+  • Sonic Testnet (domain 10)
+  • Unichain Sepolia (domain 11)
+  • World Chain Sepolia (domain 12)
+  Total testnet chains: 11 (previously 3)
 ```
 
 ## User Preferences

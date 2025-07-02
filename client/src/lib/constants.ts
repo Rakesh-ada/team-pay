@@ -150,5 +150,75 @@ export const TESTNET_CHAINS: Chain[] = [
     usdcAddress: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
     cctpDomain: 6,
     color: 'bg-blue-600'
+  },
+  {
+    id: 43113,
+    name: 'Avalanche Fuji',
+    symbol: 'AVAX',
+    rpcUrl: 'https://avalanche-fuji.infura.io/v3/YOUR_PROJECT_ID',
+    blockExplorer: 'https://testnet.snowtrace.io',
+    usdcAddress: '0x5425890298aed601595a70AB815c96711a31Bc65',
+    cctpDomain: 1,
+    color: 'bg-red-400'
+  },
+  {
+    id: 11155420,
+    name: 'OP Sepolia',
+    symbol: 'ETH',
+    rpcUrl: 'https://optimism-sepolia.infura.io/v3/YOUR_PROJECT_ID',
+    blockExplorer: 'https://sepolia-optimism.etherscan.io',
+    usdcAddress: '0x5fd84259d66Cd46123540766Be93DFE6D43130D7',
+    cctpDomain: 2,
+    color: 'bg-red-600'
+  },
+  {
+    id: 80002,
+    name: 'Polygon Amoy',
+    symbol: 'MATIC',
+    rpcUrl: 'https://polygon-amoy.infura.io/v3/YOUR_PROJECT_ID',
+    blockExplorer: 'https://amoy.polygonscan.com',
+    usdcAddress: '0x41E94Eb019C0762f9Bfcf9Fb1E58725BfB0e7582',
+    cctpDomain: 7,
+    color: 'bg-purple-500'
+  },
+  {
+    id: 59901,
+    name: 'Linea Sepolia',
+    symbol: 'ETH',
+    rpcUrl: 'https://rpc.sepolia.linea.build',
+    blockExplorer: 'https://sepolia.lineascan.build',
+    usdcAddress: '0x2F25deB3848C207fc8E0c34035B3Ba7fC157602B',
+    cctpDomain: 9,
+    color: 'bg-green-500'
+  },
+  {
+    id: 713715,
+    name: 'Sonic Testnet',
+    symbol: 'S',
+    rpcUrl: 'https://rpc.testnet.soniclabs.com',
+    blockExplorer: 'https://testnet.sonicscan.org',
+    usdcAddress: '0x2F25deB3848C207fc8E0c34035B3Ba7fC157602B',
+    cctpDomain: 10,
+    color: 'bg-cyan-500'
+  },
+  {
+    id: 1301,
+    name: 'Unichain Sepolia',
+    symbol: 'ETH',
+    rpcUrl: 'https://sepolia.unichain.org',
+    blockExplorer: 'https://sepolia.uniscan.xyz',
+    usdcAddress: '0x2F25deB3848C207fc8E0c34035B3Ba7fC157602B',
+    cctpDomain: 11,
+    color: 'bg-pink-500'
+  },
+  {
+    id: 4801,
+    name: 'World Chain Sepolia',
+    symbol: 'ETH',
+    rpcUrl: 'https://worldchain-sepolia.g.alchemy.com/public',
+    blockExplorer: 'https://sepolia.worldscan.org',
+    usdcAddress: '0x2F25deB3848C207fc8E0c34035B3Ba7fC157602B',
+    cctpDomain: 12,
+    color: 'bg-indigo-500'
   }
 ];

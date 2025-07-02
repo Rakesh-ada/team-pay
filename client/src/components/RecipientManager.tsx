@@ -74,11 +74,22 @@ export default function RecipientManager() {
   const getChainColor = (chainName: string) => {
     const colors = {
       'Ethereum': 'bg-red-500',
+      'Sepolia': 'bg-red-500',
       'Polygon': 'bg-purple-500',
+      'Polygon Amoy': 'bg-purple-500',
       'Arbitrum': 'bg-blue-500',
+      'Arbitrum Sepolia': 'bg-blue-500',
       'Base': 'bg-blue-600',
+      'Base Sepolia': 'bg-blue-600',
       'OP Mainnet': 'bg-red-600',
-      'Avalanche': 'bg-red-500'
+      'OP Sepolia': 'bg-red-600',
+      'Avalanche': 'bg-red-400',
+      'Avalanche Fuji': 'bg-red-400',
+      'Linea': 'bg-green-500',
+      'Linea Sepolia': 'bg-green-500',
+      'Sonic Testnet': 'bg-cyan-500',
+      'Unichain Sepolia': 'bg-pink-500',
+      'World Chain Sepolia': 'bg-indigo-500'
     };
     return colors[chainName as keyof typeof colors] || 'bg-gray-500';
   };
