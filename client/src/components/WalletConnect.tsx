@@ -49,9 +49,7 @@ export default function WalletConnect() {
       <div className="flex items-center space-x-2 bg-slate-700/50 rounded-lg px-3 py-2">
         <div className={`w-2 h-2 rounded-full ${isValidChain ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
         <span className="text-sm text-slate-300">{networkName}</span>
-        {autoRefresh && isConnected && (
-          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse ml-2" title="Auto-refresh enabled"></div>
-        )}
+        
       </div>
 
       
