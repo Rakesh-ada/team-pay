@@ -10,7 +10,7 @@ import { Plus, Upload, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function RecipientManager() {
-  const { recipients, addRecipient, removeRecipient, isTestnet } = useAppStore();
+  const { recipients, addRecipient, removeRecipient, isTestnet, wallet } = useAppStore();
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newRecipient, setNewRecipient] = useState({
     address: '',
@@ -19,6 +19,17 @@ export default function RecipientManager() {
   });
 
   const availableChains = isTestnet ? TESTNET_CHAINS : SUPPORTED_CHAINS;
+  
+  // Filter out the current connected chain to prevent same-domain transfers
+  const filteredChains = availableChains.filter(chain => {
+    if (!wallet.isConnected || !wallet.chainId) return true;
+    
+    const currentChain = availableChains.find(c => c.id === wallet.chainId);
+    if (!currentChain) return true;
+    
+    // Prevent selection of chains with the same CCTP domain
+    return chain.cctpDomain !== currentChain.cctpDomain;
+  });
 
   const handleAddRecipient = () => {
     const chain = availableChains.find(c => c.id === newRecipient.chainId)!;
@@ -29,8 +40,17 @@ export default function RecipientManager() {
       amount: newRecipient.amount,
       status: 'ready'
     });
-    setNewRecipient({ address: '', chainId: 1, amount: '' });
+    // Reset with the first available chain from filtered chains
+    const defaultChainId = filteredChains.length > 0 ? filteredChains[0].id : 1;
+    setNewRecipient({ address: '', chainId: defaultChainId, amount: '' });
     setShowAddDialog(false);
+  };
+
+  // Update default chain when dialog opens
+  const handleOpenDialog = () => {
+    const defaultChainId = filteredChains.length > 0 ? filteredChains[0].id : 1;
+    setNewRecipient({ ...newRecipient, chainId: defaultChainId });
+    setShowAddDialog(true);
   };
 
   const getStatusBadge = (status: string) => {
@@ -78,7 +98,10 @@ export default function RecipientManager() {
             </Button>
             <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
               <DialogTrigger asChild>
-                <Button className="bg-blue-500 hover:bg-blue-600 text-white">
+                <Button 
+                  className="bg-blue-500 hover:bg-blue-600 text-white"
+                  onClick={handleOpenDialog}
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Recipient
                 </Button>
@@ -88,6 +111,14 @@ export default function RecipientManager() {
                   <DialogTitle className="text-white">Add New Recipient</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
+                  {wallet.isConnected && filteredChains.length < availableChains.length && (
+                    <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                      <p className="text-sm text-amber-400">
+                        <strong>Note:</strong> Only showing chains with different CCTP domains than your current connected chain. 
+                        CCTP doesn't support transfers within the same domain.
+                      </p>
+                    </div>
+                  )}
                   <div>
                     <label className="text-sm font-medium text-slate-300">Address</label>
                     <Input
@@ -107,11 +138,16 @@ export default function RecipientManager() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-slate-700 border-slate-600">
-                        {availableChains.map((chain) => (
+                        {filteredChains.map((chain) => (
                           <SelectItem key={chain.id} value={chain.id.toString()}>
                             {chain.name}
                           </SelectItem>
                         ))}
+                        {filteredChains.length === 0 && (
+                          <div className="p-3 text-sm text-slate-400 text-center">
+                            No destination chains available. Please connect to a different source chain.
+                          </div>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>

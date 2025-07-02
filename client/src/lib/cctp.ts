@@ -103,6 +103,11 @@ export class CCTPService {
         throw new Error(`Unsupported destination chain: ${destinationChain}`);
       }
 
+      // Prevent same-domain transfers (CCTP doesn't support transfers within the same domain)
+      if (sourceChain.cctpDomain === destChain.cctpDomain) {
+        throw new Error(`Cannot transfer to the same chain domain. Source chain "${sourceChain.name}" and destination chain "${destChain.name}" both use CCTP domain ${sourceChain.cctpDomain}. Please select a different destination chain.`);
+      }
+
       const contracts = this.getContracts();
       const amount = parseUnits(recipient.amount, 6);
       
