@@ -8,7 +8,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
     symbol: 'ETH',
     rpcUrl: 'https://mainnet.infura.io/v3/YOUR_PROJECT_ID',
     blockExplorer: 'https://etherscan.io',
-    usdcAddress: '0xA0b86a33E6441c8C6c7bF9F7e0A2c3E1C2e7b6d7',
+    usdcAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
     cctpDomain: 0,
     color: 'bg-red-500'
   },
@@ -95,7 +95,8 @@ export const TRANSFER_METHODS: TransferMethod[] = [
 export const CCTP_V2_CONTRACTS = {
   tokenMessengerV2: '0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d',
   messageTransmitterV2: '0x81D40F21F12A8F0E3252Bccb954D722d4c464B64',
-  tokenMinterV2: '0x7C8A19A4e7F18fA2eD2cFC5FaD0292a30E4F9A18',
+  tokenMinterV2: '0xfd78EE919681417d192449715b2594ab58f5D002',
+  messageV2: '0xec546b6B005471ECf012e5aF77FBeC07e0FD8f78',
   // Legacy V1 contracts for backward compatibility
   tokenMessenger: '0xBd3fa81B58Ba92a82136038B25aDec7066af3155',
   messageTransmitter: '0x0a992d191DEeC32aFe36203Ad87D7d289a738F81',
@@ -104,13 +105,14 @@ export const CCTP_V2_CONTRACTS = {
 
 // CCTP V2 Contract Addresses (Testnet) - Sepolia testnet addresses
 export const CCTP_V2_TESTNET_CONTRACTS = {
-  tokenMessengerV2: '0x9f3B8679c73C2Fef8b59B4f3444d4e156fb70AA5',
-  messageTransmitterV2: '0x7865fAfC2db2093669d92c0F33AeEF291086BEFD',
-  tokenMinterV2: '0x4d4f96D5F562A36eeA7d3Ea5269f1d8e3b1f4a2c',
+  tokenMessengerV2: '0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA',
+  messageTransmitterV2: '0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275',
+  tokenMinterV2: '0xb43db544E2c27092c107639Ad201b3dEfAbcF192',
+  messageV2: '0xbaC0179bB358A8936169a63408C8481D582390C4',
   // Legacy V1 contracts
-  tokenMessenger: '0x9f3B8679c73C2Fef8b59B4f3444d4e156fb70AA5',
-  messageTransmitter: '0x7865fAfC2db2093669d92c0F33AeEF291086BEFD',
-  tokenMinter: '0x4d4f96D5F562A36eeA7d3Ea5269f1d8e3b1f4a2c'
+  tokenMessenger: '0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA',
+  messageTransmitter: '0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275',
+  tokenMinter: '0xb43db544E2c27092c107639Ad201b3dEfAbcF192'
 };
 
 export const CIRCLE_ATTESTATION_API = 'https://iris-api.circle.com/attestations';
