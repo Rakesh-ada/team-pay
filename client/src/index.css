@@ -2,6 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Glassmorphic Custom Scrollbar */
+@layer utilities {
+  .glass-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(147, 197, 253, 0.5) rgba(15, 23, 42, 0.3);
+  }
+  
+  .glass-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .glass-scrollbar::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.3);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+  }
+  
+  .glass-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, rgba(147, 197, 253, 0.7), rgba(99, 102, 241, 0.7));
+    border-radius: 10px;
+    border: 1px solid rgba(147, 197, 253, 0.2);
+    backdrop-filter: blur(10px);
+  }
+  
+  .glass-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, rgba(147, 197, 253, 0.9), rgba(99, 102, 241, 0.9));
+  }
+  
+  .glass-scrollbar::-webkit-scrollbar-corner {
+    background: rgba(15, 23, 42, 0.3);
+  }
+}
+
+/* Glassmorphic Effects */
+@layer components {
+  .glass {
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+      0 8px 32px 0 rgba(31, 38, 135, 0.37),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .glass-light {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 
+      0 8px 32px 0 rgba(31, 38, 135, 0.2),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .glass-card {
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    box-shadow: 
+      0 10px 40px 0 rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .glass-button {
+    background: rgba(59, 130, 246, 0.2);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    transition: all 0.3s ease;
+  }
+  
+  .glass-button:hover {
+    background: rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
+  }
+}
+
 :root {
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(222, 84%, 4.9%);

@@ -1,17 +1,22 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { useState, useEffect, useRef } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAppStore } from '@/store/useAppStore';
 import { SUPPORTED_CHAINS, TESTNET_CHAINS } from '@/lib/constants';
-import { Plus, Upload, Trash2, Loader2, Clock, CheckCircle, AlertCircle, Activity, Zap } from 'lucide-react';
+import { CSVUtils } from '@/lib/csvUtils';
+import { useToast } from '@/hooks/use-toast';
+import { Plus, Upload, Download, Trash2, Loader2, Clock, CheckCircle, AlertCircle, Activity, Zap, FileText, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function RecipientManager() {
-  const { recipients, addRecipient, removeRecipient, updateRecipient, isTestnet, wallet, autoRefresh } = useAppStore();
+  const { recipients, addRecipient, removeRecipient, clearRecipients, isTestnet, wallet } = useAppStore();
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
   const [newRecipient, setNewRecipient] = useState({
     address: '',
     chainId: 1,
@@ -65,6 +70,67 @@ export default function RecipientManager() {
     const defaultChainId = filteredChains.length > 0 ? filteredChains[0].id : 1;
     setNewRecipient({ address: '', chainId: defaultChainId, amount: '' });
     setShowAddDialog(false);
+  };
+
+  const handleCSVImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    try {
+      const importedRecipients = await CSVUtils.importFromFile(file, isTestnet);
+      
+      // Add each recipient
+      importedRecipients.forEach(recipient => {
+        const isSameChain = wallet.isConnected && wallet.chainId === recipient.chainId;
+        addRecipient({
+          ...recipient,
+          status: 'ready',
+          isSameChain
+        });
+      });
+
+      toast({
+        title: "CSV Import Successful",
+        description: `Imported ${importedRecipients.length} recipients from ${file.name}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Import Failed",
+        description: error instanceof Error ? error.message : "Failed to import CSV file",
+        variant: "destructive",
+      });
+    } finally {
+      setIsImporting(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleCSVExport = () => {
+    if (recipients.length === 0) {
+      toast({
+        title: "No Data to Export",
+        description: "Add some recipients before exporting to CSV",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    CSVUtils.downloadCSV(recipients);
+    toast({
+      title: "Export Successful",
+      description: `Exported ${recipients.length} recipients to CSV`,
+    });
+  };
+
+  const handleDownloadSample = () => {
+    CSVUtils.downloadSampleCSV();
+    toast({
+      title: "Sample Downloaded",
+      description: "Downloaded sample CSV format for reference",
+    });
   };
 
   // Update default chain when dialog opens
@@ -165,28 +231,94 @@ export default function RecipientManager() {
   };
 
   return (
-    <Card className="bg-slate-800 border-slate-700">
-      <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-          <h2 className="text-lg font-semibold text-white">Recipients</h2>
-          <div className="flex items-center space-x-3">
-            <Button
-              variant="outline"
-              className="bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              Import CSV
-            </Button>
-            <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-              <DialogTrigger asChild>
-                <Button 
-                  className="bg-blue-500 hover:bg-blue-600 text-white"
-                  onClick={handleOpenDialog}
+    <>
+      {/* Hidden file input for CSV import */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv"
+        onChange={handleCSVImport}
+        className="hidden"
+      />
+
+      <Card className="border-none bg-transparent shadow-none">
+        <CardHeader className="p-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 glass-light rounded-xl flex items-center justify-center">
+                <Users className="w-5 h-5 text-cyan-400" />
+              </div>
+              <div>
+                <CardTitle className="text-xl font-bold text-white">Team Recipients</CardTitle>
+                <p className="text-slate-400 text-sm">
+                  {recipients.length} recipients • {recipients.reduce((sum, r) => sum + parseFloat(r.amount || '0'), 0).toFixed(2)} USDC total
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap items-center gap-2">
+              {/* CSV Controls */}
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isImporting}
+                  className="glass-button text-white border-white/20 hover:border-white/30"
                 >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Recipient
+                  {isImporting ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Upload className="w-4 h-4 mr-2" />
+                  )}
+                  Import CSV
                 </Button>
-              </DialogTrigger>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCSVExport}
+                  disabled={recipients.length === 0}
+                  className="glass-button text-white border-white/20 hover:border-white/30"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Export CSV
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDownloadSample}
+                  className="glass-button text-white border-white/20 hover:border-white/30"
+                >
+                  <FileText className="w-4 h-4 mr-2" />
+                  Sample
+                </Button>
+              </div>
+
+              {recipients.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={clearRecipients}
+                  className="glass-button text-red-400 border-red-400/20 hover:border-red-400/30"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Clear All
+                </Button>
+              )}
+
+              <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+                <DialogTrigger asChild>
+                  <Button 
+                    size="sm"
+                    className="glass-button text-white border-cyan-400/30 hover:border-cyan-400/50 bg-cyan-400/10 hover:bg-cyan-400/20"
+                    onClick={handleOpenDialog}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Recipient
+                  </Button>
+                </DialogTrigger>
               <DialogContent className="bg-slate-800 border-slate-700">
                 <DialogHeader>
                   <DialogTitle className="text-white">Add New Recipient</DialogTitle>
@@ -318,7 +450,8 @@ export default function RecipientManager() {
             <p className="text-sm">Add recipients manually or import from CSV</p>
           </div>
         )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </>
   );
 }
