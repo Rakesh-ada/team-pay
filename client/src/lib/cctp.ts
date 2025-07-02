@@ -71,7 +71,7 @@ export class CCTPService {
     return this.isTestnet ? TESTNET_CHAINS : SUPPORTED_CHAINS;
   }
 
-  async burnUSDC(recipient: Recipient, destinationChain: number, transferMethod: 'fast' | 'standard' = 'standard'): Promise<string> {
+  async burnUSDC(recipient: Recipient, destinationChain: number, transferMethod: 'fast' | 'standard'): Promise<string> {
     try {
       const network = await this.provider.getNetwork();
       const chainId = Number(network.chainId);

@@ -4,10 +4,11 @@ export interface Recipient {
   chainId: number;
   chainName: string;
   amount: string;
-  status: 'ready' | 'pending' | 'burning' | 'attesting' | 'minting' | 'completed' | 'failed';
+  status: 'ready' | 'pending' | 'transferring' | 'burning' | 'attesting' | 'minting' | 'completed' | 'failed';
   txHash?: string;
   attestationHash?: string;
   error?: string;
+  isSameChain?: boolean;
 }
 
 export interface Chain {
@@ -22,7 +23,7 @@ export interface Chain {
 }
 
 export interface TransferMethod {
-  type: 'fast' | 'standard';
+  type: 'fast' | 'standard' | 'same-chain';
   name: string;
   description: string;
   estimatedTime: string;
@@ -31,7 +32,7 @@ export interface TransferMethod {
 
 export interface Transaction {
   id: string;
-  type: 'burn' | 'mint';
+  type: 'burn' | 'mint' | 'transfer';
   status: 'pending' | 'confirmed' | 'failed';
   txHash: string;
   chainId: number;

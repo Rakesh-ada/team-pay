@@ -76,15 +76,22 @@ export const SUPPORTED_CHAINS: Chain[] = [
 
 export const TRANSFER_METHODS: TransferMethod[] = [
   {
+    type: 'same-chain',
+    name: 'Same-Chain Transfer',
+    description: 'Direct USDC transfers within the same blockchain network',
+    estimatedTime: '~30s',
+    fee: 'Gas only'
+  },
+  {
     type: 'fast',
-    name: 'Fast Transfer',
+    name: 'Fast Cross-Chain',
     description: 'Faster-than-finality transfers with Circle\'s attestation backing',
     estimatedTime: '~8-20s',
     fee: 'Per chain basis'
   },
   {
     type: 'standard',
-    name: 'Standard Transfer',
+    name: 'Standard Cross-Chain',
     description: 'Hard finality transfers with maximum security',
     estimatedTime: '~13-19m',
     fee: 'No onchain fee'

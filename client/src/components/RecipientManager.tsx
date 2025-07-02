@@ -20,25 +20,28 @@ export default function RecipientManager() {
 
   const availableChains = isTestnet ? TESTNET_CHAINS : SUPPORTED_CHAINS;
   
-  // Filter out the current connected chain to prevent same-domain transfers
+  // Include current chain for same-chain transfers, plus other chains for cross-chain
   const filteredChains = availableChains.filter(chain => {
     if (!wallet.isConnected || !wallet.chainId) return true;
     
     const currentChain = availableChains.find(c => c.id === wallet.chainId);
     if (!currentChain) return true;
     
-    // Prevent selection of chains with the same CCTP domain
-    return chain.cctpDomain !== currentChain.cctpDomain;
+    // Allow current chain for same-chain transfers, and different CCTP domains for cross-chain
+    return chain.id === wallet.chainId || chain.cctpDomain !== currentChain.cctpDomain;
   });
 
   const handleAddRecipient = () => {
     const chain = availableChains.find(c => c.id === newRecipient.chainId)!;
+    const isSameChain = wallet.isConnected && wallet.chainId === newRecipient.chainId;
+    
     addRecipient({
       address: newRecipient.address,
       chainId: newRecipient.chainId,
       chainName: chain.name,
       amount: newRecipient.amount,
-      status: 'ready'
+      status: 'ready',
+      isSameChain: isSameChain
     });
     // Reset with the first available chain from filtered chains
     const defaultChainId = filteredChains.length > 0 ? filteredChains[0].id : 1;
@@ -57,6 +60,7 @@ export default function RecipientManager() {
     const statusStyles = {
       ready: 'bg-slate-600/50 text-slate-300',
       pending: 'bg-amber-500/20 text-amber-400',
+      transferring: 'bg-cyan-500/20 text-cyan-400',
       burning: 'bg-orange-500/20 text-orange-400',
       attesting: 'bg-blue-500/20 text-blue-400',
       minting: 'bg-purple-500/20 text-purple-400',
@@ -211,7 +215,14 @@ export default function RecipientManager() {
                     <td className="p-4">
                       <div className="flex items-center space-x-2">
                         <div className={cn("w-4 h-4 rounded-full", getChainColor(recipient.chainName))}></div>
-                        <span className="text-sm text-white">{recipient.chainName}</span>
+                        <div className="flex flex-col">
+                          <span className="text-sm text-white">{recipient.chainName}</span>
+                          {recipient.isSameChain ? (
+                            <span className="text-xs text-cyan-400">Same-Chain</span>
+                          ) : (
+                            <span className="text-xs text-purple-400">Cross-Chain</span>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="p-4">
