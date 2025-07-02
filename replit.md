@@ -109,6 +109,14 @@ Changelog:
   • Unichain Sepolia (domain 11)
   • World Chain Sepolia (domain 12)
   Total testnet chains: 11 (previously 3)
+- July 02, 2025: Enhanced auto-updating system with real-time UI updates:
+  • Auto-refresh wallet balance every 10 seconds when enabled
+  • Real-time transaction status monitoring every 15 seconds  
+  • Live activity feed showing wallet, balance, and transaction events
+  • System status dashboard with uptime and health monitoring
+  • Enhanced recipient status badges with animated icons and timestamps
+  • Connection status indicators with visual feedback
+  • All components now update their own states independently
 ```
 
 ## User Preferences

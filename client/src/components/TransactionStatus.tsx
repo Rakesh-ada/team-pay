@@ -1,9 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/useAppStore';
-import { Loader2, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { Loader2, Clock, CheckCircle, AlertCircle, RefreshCw, Activity } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
 
 export default function TransactionStatus() {
-  const { recipients } = useAppStore();
+  const { recipients, autoRefresh, updateRecipient } = useAppStore();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
   const activeTransactions = recipients.filter(r => 
     ['burning', 'attesting', 'minting'].includes(r.status)
@@ -16,6 +20,36 @@ export default function TransactionStatus() {
   const failedTransactions = recipients.filter(r => 
     r.status === 'failed'
   );
+
+  // Mock status update function (in real app, this would call CCTP API)
+  const updateTransactionStatuses = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Update last refresh time
+      setLastUpdate(new Date());
+      
+      // In a real application, you would:
+      // 1. Check Circle API for attestation status
+      // 2. Update recipient statuses based on blockchain confirmations
+      // 3. Handle any errors or retries
+      
+    } catch (error) {
+      console.error('Failed to update transaction statuses:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  // Auto-refresh effect
+  useEffect(() => {
+    if (autoRefresh && activeTransactions.length > 0) {
+      const interval = setInterval(updateTransactionStatuses, 15000); // Check every 15 seconds
+      return () => clearInterval(interval);
+    }
+  }, [autoRefresh, activeTransactions.length, updateTransactionStatuses]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -60,7 +94,31 @@ export default function TransactionStatus() {
   return (
     <Card className="bg-slate-800 border-slate-700">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-white">Transaction Status</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg font-semibold text-white">Transaction Status</CardTitle>
+          <div className="flex items-center space-x-2">
+            {autoRefresh && activeTransactions.length > 0 && (
+              <div className="flex items-center space-x-1">
+                <Activity className="w-3 h-3 text-emerald-400 animate-pulse" />
+                <span className="text-xs text-slate-400">Auto-updating</span>
+              </div>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={updateTransactionStatuses}
+              disabled={isRefreshing}
+              className="h-8 w-8 p-0 text-slate-400 hover:text-white"
+            >
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
+        </div>
+        {allTransactions.length > 0 && (
+          <div className="text-xs text-slate-400 mt-1">
+            Last updated: {lastUpdate.toLocaleTimeString()}
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

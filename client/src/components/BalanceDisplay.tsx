@@ -1,19 +1,52 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/useAppStore';
-import { CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
+import { useWallet } from '@/hooks/useWallet';
+import { CheckCircle, AlertCircle, ExternalLink, RefreshCw } from 'lucide-react';
+import { useState } from 'react';
 
 export default function BalanceDisplay() {
-  const { wallet, recipients, isTestnet } = useAppStore();
+  const { wallet, recipients, isTestnet, autoRefresh } = useAppStore();
+  const { updateWalletData } = useWallet();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const totalNeeded = recipients.reduce((sum, r) => sum + parseFloat(r.amount || '0'), 0);
   const currentBalance = parseFloat(wallet.balance || '0');
   const hasSufficientBalance = currentBalance >= totalNeeded;
 
+  const handleRefresh = async () => {
+    if (!wallet.isConnected) return;
+    
+    setIsRefreshing(true);
+    try {
+      await updateWalletData();
+    } catch (error) {
+      console.error('Failed to refresh balance:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   return (
     <Card className="bg-slate-800 border-slate-700">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-white">Your Balance</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg font-semibold text-white">Your Balance</CardTitle>
+          <div className="flex items-center space-x-2">
+            {autoRefresh && (
+              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" title="Auto-refresh enabled"></div>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={!wallet.isConnected || isRefreshing}
+              className="h-8 w-8 p-0 text-slate-400 hover:text-white"
+            >
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="text-center">

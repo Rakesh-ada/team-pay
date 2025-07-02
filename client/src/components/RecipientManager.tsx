@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,17 +6,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAppStore } from '@/store/useAppStore';
 import { SUPPORTED_CHAINS, TESTNET_CHAINS } from '@/lib/constants';
-import { Plus, Upload, Trash2 } from 'lucide-react';
+import { Plus, Upload, Trash2, Loader2, Clock, CheckCircle, AlertCircle, Activity, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function RecipientManager() {
-  const { recipients, addRecipient, removeRecipient, isTestnet, wallet } = useAppStore();
+  const { recipients, addRecipient, removeRecipient, updateRecipient, isTestnet, wallet, autoRefresh } = useAppStore();
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newRecipient, setNewRecipient] = useState({
     address: '',
     chainId: 1,
     amount: ''
   });
+  const [statusUpdateTimestamps, setStatusUpdateTimestamps] = useState<{[key: string]: Date}>({});
 
   const availableChains = isTestnet ? TESTNET_CHAINS : SUPPORTED_CHAINS;
   
@@ -30,6 +31,23 @@ export default function RecipientManager() {
     // Allow current chain for same-chain transfers, and different CCTP domains for cross-chain
     return chain.id === wallet.chainId || chain.cctpDomain !== currentChain.cctpDomain;
   });
+
+  // Update timestamps when statuses change
+  useEffect(() => {
+    recipients.forEach(recipient => {
+      if (!statusUpdateTimestamps[recipient.id]) {
+        setStatusUpdateTimestamps(prev => ({
+          ...prev,
+          [recipient.id]: new Date()
+        }));
+      } else if (recipient.status !== 'ready') {
+        setStatusUpdateTimestamps(prev => ({
+          ...prev,
+          [recipient.id]: new Date()
+        }));
+      }
+    });
+  }, [recipients]);
 
   const handleAddRecipient = () => {
     const chain = availableChains.find(c => c.id === newRecipient.chainId)!;
@@ -56,22 +74,70 @@ export default function RecipientManager() {
     setShowAddDialog(true);
   };
 
-  const getStatusBadge = (status: string) => {
-    const statusStyles = {
-      ready: 'bg-slate-600/50 text-slate-300',
-      pending: 'bg-amber-500/20 text-amber-400',
-      transferring: 'bg-cyan-500/20 text-cyan-400',
-      burning: 'bg-orange-500/20 text-orange-400',
-      attesting: 'bg-blue-500/20 text-blue-400',
-      minting: 'bg-purple-500/20 text-purple-400',
-      completed: 'bg-emerald-500/20 text-emerald-400',
-      failed: 'bg-red-500/20 text-red-400'
+  const getStatusBadge = (status: string, recipientId: string) => {
+    const timestamp = statusUpdateTimestamps[recipientId];
+    const timeAgo = timestamp ? Math.floor((Date.now() - timestamp.getTime()) / 1000) : 0;
+    
+    const statusConfig = {
+      ready: { 
+        color: 'bg-slate-600 text-slate-300', 
+        text: 'Ready', 
+        icon: <CheckCircle className="w-3 h-3" /> 
+      },
+      pending: { 
+        color: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30', 
+        text: 'Pending', 
+        icon: <Clock className="w-3 h-3 animate-pulse" /> 
+      },
+      transferring: { 
+        color: 'bg-blue-500/20 text-blue-400 border border-blue-500/30', 
+        text: 'Transferring', 
+        icon: <Loader2 className="w-3 h-3 animate-spin" /> 
+      },
+      burning: { 
+        color: 'bg-orange-500/20 text-orange-400 border border-orange-500/30', 
+        text: 'Burning', 
+        icon: <Activity className="w-3 h-3 animate-bounce" /> 
+      },
+      attesting: { 
+        color: 'bg-purple-500/20 text-purple-400 border border-purple-500/30', 
+        text: 'Attesting', 
+        icon: <Clock className="w-3 h-3 animate-pulse" /> 
+      },
+      minting: { 
+        color: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30', 
+        text: 'Minting', 
+        icon: <Zap className="w-3 h-3 animate-pulse" /> 
+      },
+      completed: { 
+        color: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30', 
+        text: 'Completed', 
+        icon: <CheckCircle className="w-3 h-3" /> 
+      },
+      failed: { 
+        color: 'bg-red-500/20 text-red-400 border border-red-500/30', 
+        text: 'Failed', 
+        icon: <AlertCircle className="w-3 h-3" /> 
+      },
     };
 
+    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.ready;
+    
     return (
-      <span className={`px-2 py-1 rounded text-xs font-medium ${statusStyles[status as keyof typeof statusStyles]}`}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
+      <div className="flex flex-col items-start space-y-1">
+        <span className={cn(
+          'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium space-x-1',
+          config.color
+        )}>
+          {config.icon}
+          <span>{config.text}</span>
+        </span>
+        {status !== 'ready' && timeAgo > 0 && (
+          <span className="text-xs text-slate-500">
+            {timeAgo < 60 ? `${timeAgo}s ago` : `${Math.floor(timeAgo / 60)}m ago`}
+          </span>
+        )}
+      </div>
     );
   };
 
@@ -229,7 +295,7 @@ export default function RecipientManager() {
                       <span className="font-semibold text-white">{recipient.amount}</span>
                     </td>
                     <td className="p-4">
-                      {getStatusBadge(recipient.status)}
+                      {getStatusBadge(recipient.status, recipient.id)}
                     </td>
                     <td className="p-4 text-center">
                       <Button

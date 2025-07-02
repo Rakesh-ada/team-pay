@@ -7,6 +7,8 @@ import PaymentSummary from '@/components/PaymentSummary';
 import FeeEstimation from '@/components/FeeEstimation';
 import BalanceDisplay from '@/components/BalanceDisplay';
 import SettingsPanel from '@/components/SettingsPanel';
+import LiveFeed from '@/components/LiveFeed';
+import SystemStatus from '@/components/SystemStatus';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAppStore } from '@/store/useAppStore';
@@ -118,6 +120,8 @@ export default function Home() {
             </Button>
 
             <SettingsPanel />
+            <SystemStatus />
+            <LiveFeed />
           </div>
         </div>
       </main>

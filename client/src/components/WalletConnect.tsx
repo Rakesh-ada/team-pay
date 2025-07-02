@@ -2,18 +2,37 @@ import { Button } from '@/components/ui/button';
 import { useWallet } from '@/hooks/useWallet';
 import { useAppStore } from '@/store/useAppStore';
 import { SUPPORTED_CHAINS, TESTNET_CHAINS } from '@/lib/constants';
-import { Wallet } from 'lucide-react';
+import { Wallet, Wifi, WifiOff } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function WalletConnect() {
   const { isConnected, address, chainId, connectWallet, disconnectWallet } = useWallet();
-  const { isTestnet } = useAppStore();
+  const { isTestnet, autoRefresh } = useAppStore();
+  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'connecting' | 'disconnected'>('disconnected');
+
+  // Update connection status based on wallet state
+  useEffect(() => {
+    if (isConnected) {
+      setConnectionStatus('connected');
+    } else {
+      setConnectionStatus('disconnected');
+    }
+  }, [isConnected]);
 
   const handleConnect = async () => {
+    setConnectionStatus('connecting');
     try {
       await connectWallet();
+      setConnectionStatus('connected');
     } catch (error) {
       console.error('Failed to connect wallet:', error);
+      setConnectionStatus('disconnected');
     }
+  };
+
+  const handleDisconnect = () => {
+    disconnectWallet();
+    setConnectionStatus('disconnected');
   };
 
   const shortAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '';
@@ -30,13 +49,28 @@ export default function WalletConnect() {
       <div className="flex items-center space-x-2 bg-slate-700/50 rounded-lg px-3 py-2">
         <div className={`w-2 h-2 rounded-full ${isValidChain ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
         <span className="text-sm text-slate-300">{networkName}</span>
+        {autoRefresh && isConnected && (
+          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse ml-2" title="Auto-refresh enabled"></div>
+        )}
+      </div>
+
+      {/* Connection Status Indicator */}
+      <div className="flex items-center space-x-2 bg-slate-700/50 rounded-lg px-3 py-2">
+        {connectionStatus === 'connected' ? (
+          <Wifi className="w-4 h-4 text-emerald-400" />
+        ) : connectionStatus === 'connecting' ? (
+          <Wifi className="w-4 h-4 text-yellow-400 animate-pulse" />
+        ) : (
+          <WifiOff className="w-4 h-4 text-red-400" />
+        )}
+        <span className="text-sm text-slate-300 capitalize">{connectionStatus}</span>
       </div>
 
       {/* Wallet Connection */}
       {isConnected ? (
         <Button
           variant="outline"
-          onClick={disconnectWallet}
+          onClick={handleDisconnect}
           className="bg-blue-500 hover:bg-blue-600 text-white border-blue-500 hover:border-blue-600"
         >
           <Wallet className="w-4 h-4 mr-2" />
@@ -45,10 +79,11 @@ export default function WalletConnect() {
       ) : (
         <Button
           onClick={handleConnect}
-          className="bg-blue-500 hover:bg-blue-600 text-white"
+          disabled={connectionStatus === 'connecting'}
+          className="bg-blue-500 hover:bg-blue-600 text-white disabled:opacity-50"
         >
           <Wallet className="w-4 h-4 mr-2" />
-          Connect Wallet
+          {connectionStatus === 'connecting' ? 'Connecting...' : 'Connect Wallet'}
         </Button>
       )}
     </div>

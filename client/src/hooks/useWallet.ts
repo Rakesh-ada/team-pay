@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { walletService } from '@/lib/wallet';
 
 export const useWallet = () => {
-  const { wallet, setWallet } = useAppStore();
+  const { wallet, setWallet, autoRefresh } = useAppStore();
+  const intervalRef = useRef<NodeJS.Timeout>();
 
   const connectWallet = async () => {
     try {
@@ -39,6 +40,65 @@ export const useWallet = () => {
     }
   };
 
+  // Auto-update wallet balance and connection status
+  const updateWalletData = useCallback(async () => {
+    if (!wallet.isConnected || !wallet.address) return;
+    
+    try {
+      const provider = walletService.getProvider();
+      if (!provider) return;
+
+      // Check if wallet is still connected
+      const accounts = await provider.listAccounts();
+      if (accounts.length === 0) {
+        disconnectWallet();
+        return;
+      }
+
+      // Update balance
+      const balance = await walletService.getUSDCBalance(wallet.address);
+      const network = await provider.getNetwork();
+      
+      setWallet({
+        balance,
+        chainId: Number(network.chainId)
+      });
+    } catch (error) {
+      console.error('Failed to update wallet data:', error);
+    }
+  }, [wallet.isConnected, wallet.address, setWallet]);
+
+  // Auto-refresh effect
+  useEffect(() => {
+    if (autoRefresh && wallet.isConnected) {
+      // Update immediately
+      updateWalletData();
+      
+      // Set up interval for periodic updates
+      intervalRef.current = setInterval(updateWalletData, 10000); // Update every 10 seconds
+      
+      return () => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+      };
+    } else {
+      // Clear interval if auto-refresh is disabled
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    }
+  }, [autoRefresh, wallet.isConnected, updateWalletData]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
   // Listen for account changes
   useEffect(() => {
     if (window.ethereum) {
@@ -70,6 +130,7 @@ export const useWallet = () => {
     ...wallet,
     connectWallet,
     disconnectWallet,
-    switchNetwork
+    switchNetwork,
+    updateWalletData
   };
 };
