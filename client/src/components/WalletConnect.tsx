@@ -1,9 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { useWallet } from '@/hooks/useWallet';
+import { useAppStore } from '@/store/useAppStore';
+import { SUPPORTED_CHAINS, TESTNET_CHAINS } from '@/lib/constants';
 import { Wallet } from 'lucide-react';
 
 export default function WalletConnect() {
-  const { isConnected, address, connectWallet, disconnectWallet } = useWallet();
+  const { isConnected, address, chainId, connectWallet, disconnectWallet } = useWallet();
+  const { isTestnet } = useAppStore();
 
   const handleConnect = async () => {
     try {
@@ -15,12 +18,18 @@ export default function WalletConnect() {
 
   const shortAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '';
 
+  // Get current network info
+  const supportedChains = isTestnet ? TESTNET_CHAINS : SUPPORTED_CHAINS;
+  const currentChain = chainId ? supportedChains.find(chain => chain.id === chainId) : null;
+  const networkName = currentChain?.name || (isConnected ? 'Unknown Network' : 'Not Connected');
+  const isValidChain = currentChain !== null;
+
   return (
     <div className="flex items-center space-x-4">
       {/* Network Indicator */}
       <div className="flex items-center space-x-2 bg-slate-700/50 rounded-lg px-3 py-2">
-        <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-        <span className="text-sm text-slate-300">Ethereum</span>
+        <div className={`w-2 h-2 rounded-full ${isValidChain ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
+        <span className="text-sm text-slate-300">{networkName}</span>
       </div>
 
       {/* Wallet Connection */}

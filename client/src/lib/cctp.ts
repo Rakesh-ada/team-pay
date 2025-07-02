@@ -232,8 +232,34 @@ export class CCTPService {
     try {
       const network = await this.provider.getNetwork();
       const currentChainId = Number(network.chainId);
+      
+      // Automatically switch to destination chain if different
       if (currentChainId !== destinationChainId) {
-        throw new Error('Please switch to the destination chain');
+        console.log(`Switching from chain ${currentChainId} to destination chain ${destinationChainId}`);
+        
+        if (!window.ethereum) {
+          throw new Error('MetaMask is not installed');
+        }
+
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: `0x${destinationChainId.toString(16)}` }]
+          });
+          
+          // Wait a moment for the network switch to complete
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          // Refresh provider and signer after network switch
+          this.provider = new BrowserProvider(window.ethereum);
+          this.signer = await this.provider.getSigner();
+          
+        } catch (switchError: any) {
+          if (switchError.code === 4902) {
+            throw new Error(`Destination chain ${destinationChainId} not added to MetaMask. Please add it manually.`);
+          }
+          throw new Error(`Failed to switch to destination chain: ${switchError.message}`);
+        }
       }
 
       const contracts = this.getContracts();
