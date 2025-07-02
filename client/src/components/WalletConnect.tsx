@@ -54,17 +54,7 @@ export default function WalletConnect() {
         )}
       </div>
 
-      {/* Connection Status Indicator */}
-      <div className="flex items-center space-x-2 bg-slate-700/50 rounded-lg px-3 py-2">
-        {connectionStatus === 'connected' ? (
-          <Wifi className="w-4 h-4 text-emerald-400" />
-        ) : connectionStatus === 'connecting' ? (
-          <Wifi className="w-4 h-4 text-yellow-400 animate-pulse" />
-        ) : (
-          <WifiOff className="w-4 h-4 text-red-400" />
-        )}
-        <span className="text-sm text-slate-300 capitalize">{connectionStatus}</span>
-      </div>
+      
 
       {/* Wallet Connection */}
       {isConnected ? (
