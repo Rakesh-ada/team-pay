@@ -39,43 +39,49 @@
 /* Glassmorphic Effects */
 @layer components {
   .glass {
-    background: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: 
-      0 8px 32px 0 rgba(31, 38, 135, 0.37),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+      0 8px 32px 0 rgba(0, 0, 0, 0.5),
+      0 2px 16px 0 rgba(120, 119, 198, 0.3),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
   }
   
   .glass-light {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 
-      0 8px 32px 0 rgba(31, 38, 135, 0.2),
+      0 8px 32px 0 rgba(0, 0, 0, 0.4),
+      0 2px 16px 0 rgba(74, 222, 128, 0.2),
       inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
   }
   
   .glass-card {
-    background: rgba(30, 41, 59, 0.6);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(28px);
+    border: 1px solid rgba(148, 163, 184, 0.25);
     box-shadow: 
-      0 10px 40px 0 rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+      0 12px 48px 0 rgba(0, 0, 0, 0.6),
+      0 4px 24px 0 rgba(255, 119, 198, 0.15),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
   }
   
   .glass-button {
-    background: rgba(59, 130, 246, 0.2);
+    background: rgba(59, 130, 246, 0.25);
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(59, 130, 246, 0.3);
+    border: 1px solid rgba(59, 130, 246, 0.4);
     transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
   }
   
   .glass-button:hover {
-    background: rgba(59, 130, 246, 0.3);
-    transform: translateY(-1px);
-    box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
+    background: rgba(59, 130, 246, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 
+      0 16px 32px rgba(59, 130, 246, 0.25),
+      0 4px 16px rgba(59, 130, 246, 0.3);
   }
 }
 
@@ -103,26 +109,26 @@
 }
 
 .dark {
-  --background: hsl(222.2, 84%, 4.9%);
+  --background: hsl(222.2, 84%, 2.5%);
   --foreground: hsl(210, 40%, 98%);
-  --muted: hsl(217.2, 32.6%, 17.5%);
-  --muted-foreground: hsl(215, 20.2%, 65.1%);
-  --popover: hsl(222.2, 84%, 4.9%);
+  --muted: hsl(217.2, 32.6%, 12%);
+  --muted-foreground: hsl(215, 20.2%, 70%);
+  --popover: hsl(222.2, 84%, 4%);
   --popover-foreground: hsl(210, 40%, 98%);
-  --card: hsl(217.2, 32.6%, 17.5%);
+  --card: hsl(217.2, 32.6%, 8%);
   --card-foreground: hsl(210, 40%, 98%);
-  --border: hsl(217.2, 32.6%, 17.5%);
-  --input: hsl(217.2, 32.6%, 17.5%);
-  --primary: hsl(221.2, 83.2%, 53.3%);
+  --border: hsl(217.2, 32.6%, 20%);
+  --input: hsl(217.2, 32.6%, 15%);
+  --primary: hsl(221.2, 83.2%, 58%);
   --primary-foreground: hsl(210, 40%, 98%);
-  --secondary: hsl(217.2, 32.6%, 17.5%);
+  --secondary: hsl(217.2, 32.6%, 12%);
   --secondary-foreground: hsl(210, 40%, 98%);
-  --accent: hsl(217.2, 32.6%, 17.5%);
+  --accent: hsl(217.2, 32.6%, 15%);
   --accent-foreground: hsl(210, 40%, 98%);
-  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive: hsl(0, 62.8%, 40%);
   --destructive-foreground: hsl(210, 40%, 98%);
-  --ring: hsl(221.2, 83.2%, 53.3%);
-  --radius: 0.5rem;
+  --ring: hsl(221.2, 83.2%, 58%);
+  --radius: 0.75rem;
 }
 
 @layer base {
@@ -131,20 +137,61 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased text-foreground;
+    background: 
+      radial-gradient(ellipse 80% 80% at 50% -20%, rgba(120, 119, 198, 0.3), transparent),
+      radial-gradient(ellipse 80% 80% at 80% 50%, rgba(255, 119, 198, 0.15), transparent),
+      radial-gradient(ellipse 80% 80% at 20% 50%, rgba(74, 222, 128, 0.15), transparent),
+      radial-gradient(ellipse 80% 80% at 50% 120%, rgba(16, 185, 129, 0.2), transparent),
+      linear-gradient(135deg, #000000 0%, #0a0a0f 15%, #1a1b23 30%, #0f172a 50%, #1e293b 70%, #0f172a 85%, #000000 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: rgba(255, 255, 255, 0.95);
   }
 }
 
 @layer utilities {
   .dark-bg {
-    background-color: hsl(222.2, 84%, 4.9%);
+    background-color: hsl(222.2, 84%, 2.5%);
   }
   
   .dark-bg-secondary {
-    background-color: hsl(217.2, 32.6%, 17.5%);
+    background-color: hsl(217.2, 32.6%, 8%);
   }
   
   .dark-border {
-    border-color: hsl(217.2, 32.6%, 17.5%);
+    border-color: hsl(217.2, 32.6%, 20%);
+  }
+  
+  .floating-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .floating-animation-delayed {
+    animation: float 6s ease-in-out infinite 2s;
+  }
+  
+  .glow-pulse {
+    animation: glow-pulse 4s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes glow-pulse {
+    0%, 100% { 
+      box-shadow: 
+        0 0 20px rgba(120, 119, 198, 0.3),
+        0 0 40px rgba(255, 119, 198, 0.2),
+        0 0 60px rgba(74, 222, 128, 0.1);
+    }
+    50% { 
+      box-shadow: 
+        0 0 30px rgba(120, 119, 198, 0.5),
+        0 0 60px rgba(255, 119, 198, 0.3),
+        0 0 90px rgba(74, 222, 128, 0.2);
+    }
   }
 }
