@@ -91,15 +91,23 @@ export const TRANSFER_METHODS: TransferMethod[] = [
   }
 ];
 
-// CCTP V2 Contract Addresses (Mainnet)
+// CCTP V2 Contract Addresses (Mainnet) - Universal addresses across all chains
 export const CCTP_V2_CONTRACTS = {
+  tokenMessengerV2: '0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d',
+  messageTransmitterV2: '0x81D40F21F12A8F0E3252Bccb954D722d4c464B64',
+  tokenMinterV2: '0x7C8A19A4e7F18fA2eD2cFC5FaD0292a30E4F9A18',
+  // Legacy V1 contracts for backward compatibility
   tokenMessenger: '0xBd3fa81B58Ba92a82136038B25aDec7066af3155',
   messageTransmitter: '0x0a992d191DEeC32aFe36203Ad87D7d289a738F81',
   tokenMinter: '0xc4922d64a24675E16e1586e3e3Aa56C06fABe907'
 };
 
-// CCTP V2 Contract Addresses (Testnet)
+// CCTP V2 Contract Addresses (Testnet) - Sepolia testnet addresses
 export const CCTP_V2_TESTNET_CONTRACTS = {
+  tokenMessengerV2: '0x9f3B8679c73C2Fef8b59B4f3444d4e156fb70AA5',
+  messageTransmitterV2: '0x7865fAfC2db2093669d92c0F33AeEF291086BEFD',
+  tokenMinterV2: '0x4d4f96D5F562A36eeA7d3Ea5269f1d8e3b1f4a2c',
+  // Legacy V1 contracts
   tokenMessenger: '0x9f3B8679c73C2Fef8b59B4f3444d4e156fb70AA5',
   messageTransmitter: '0x7865fAfC2db2093669d92c0F33AeEF291086BEFD',
   tokenMinter: '0x4d4f96D5F562A36eeA7d3Ea5269f1d8e3b1f4a2c'

@@ -1,4 +1,6 @@
 import { ethers, BrowserProvider } from 'ethers';
+import { MetaMaskSDK } from '@metamask/sdk';
+import { SUPPORTED_CHAINS, TESTNET_CHAINS } from './constants';
 
 declare global {
   interface Window {
@@ -9,18 +11,41 @@ declare global {
 export class WalletService {
   private provider: BrowserProvider | null = null;
   private signer: ethers.Signer | null = null;
+  private sdk: MetaMaskSDK | null = null;
+
+  constructor() {
+    this.initializeSDK();
+  }
+
+  private initializeSDK() {
+    this.sdk = new MetaMaskSDK({
+      dappMetadata: {
+        name: 'CCTP Bulk Transfer',
+        url: window.location.href,
+      },
+      preferDesktop: true,
+    });
+  }
 
   async connectWallet() {
-    if (!window.ethereum) {
-      throw new Error('MetaMask is not installed');
-    }
-
     try {
-      const accounts = await window.ethereum.request({
-        method: 'eth_requestAccounts'
-      });
+      if (!this.sdk) {
+        throw new Error('MetaMask SDK not initialized');
+      }
 
-      this.provider = new BrowserProvider(window.ethereum);
+      const accounts = await this.sdk.connect();
+      
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No accounts returned from MetaMask');
+      }
+
+      // Get the provider from SDK
+      const ethereum = this.sdk.getProvider();
+      if (!ethereum) {
+        throw new Error('Failed to get provider from MetaMask SDK');
+      }
+
+      this.provider = new BrowserProvider(ethereum);
       this.signer = await this.provider.getSigner();
 
       const address = accounts[0];
@@ -33,7 +58,8 @@ export class WalletService {
         balance
       };
     } catch (error) {
-      throw new Error('Failed to connect wallet');
+      console.error('Failed to connect wallet:', error);
+      throw error;
     }
   }
 
@@ -60,9 +86,35 @@ export class WalletService {
       throw new Error('Provider not initialized');
     }
 
-    // This would use the actual USDC contract address for the current chain
-    // For now, returning mock balance
-    return '1250.00';
+    try {
+      const network = await this.provider.getNetwork();
+      const chainId = Number(network.chainId);
+      
+      // Find the chain configuration
+      const allChains = [...SUPPORTED_CHAINS, ...TESTNET_CHAINS];
+      const chain = allChains.find(c => c.id === chainId);
+      
+      if (!chain) {
+        return '0.00';
+      }
+
+      // USDC contract ABI for balanceOf function
+      const usdcAbi = [
+        'function balanceOf(address account) view returns (uint256)',
+        'function decimals() view returns (uint8)'
+      ];
+
+      const usdcContract = new ethers.Contract(chain.usdcAddress, usdcAbi, this.provider);
+      const balance = await usdcContract.balanceOf(address);
+      const decimals = await usdcContract.decimals();
+      
+      // Convert from wei to human readable format
+      const formattedBalance = ethers.formatUnits(balance, decimals);
+      return parseFloat(formattedBalance).toFixed(2);
+    } catch (error) {
+      console.error('Failed to get USDC balance:', error);
+      return '0.00';
+    }
   }
 
   getProvider() {

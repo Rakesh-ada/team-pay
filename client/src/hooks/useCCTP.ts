@@ -11,7 +11,8 @@ export const useCCTP = () => {
     addTransaction, 
     updateTransaction,
     selectedTransferMethod,
-    setFeeEstimation
+    setFeeEstimation,
+    isTestnet
   } = useAppStore();
   
   const [isExecuting, setIsExecuting] = useState(false);
@@ -26,7 +27,8 @@ export const useCCTP = () => {
     try {
       const cctpService = new CCTPService(
         walletService.getProvider()!,
-        walletService.getSigner()!
+        walletService.getSigner()!,
+        isTestnet
       );
 
       for (const recipient of recipients) {
@@ -36,8 +38,8 @@ export const useCCTP = () => {
           // Update status to burning
           updateRecipient(recipient.id, { status: 'burning' });
 
-          // Execute burn transaction
-          const burnTxHash = await cctpService.burnUSDC(recipient, recipient.chainId);
+          // Execute burn transaction with transfer method
+          const burnTxHash = await cctpService.burnUSDC(recipient, recipient.chainId, selectedTransferMethod);
           
           updateRecipient(recipient.id, { 
             status: 'attesting', 
@@ -55,40 +57,47 @@ export const useCCTP = () => {
             timestamp: Date.now()
           });
 
-          // Poll for attestation
-          let attestation: string;
+          // Get messages and attestation using CCTP V2 API
+          let messageData;
           let attempts = 0;
-          const maxAttempts = selectedTransferMethod === 'fast' ? 5 : 60; // 5 attempts for fast, 60 for standard
+          const maxAttempts = selectedTransferMethod === 'fast' ? 10 : 60;
+          const network = await walletService.getProvider()!.getNetwork();
+          const sourceChainId = Number(network.chainId);
           
           while (attempts < maxAttempts) {
             try {
-              attestation = await cctpService.getAttestation(burnTxHash, recipient.chainId);
-              break;
+              messageData = await cctpService.getMessagesAndAttestation(burnTxHash, sourceChainId);
+              if (messageData.messages.length > 0 && messageData.messages[0].status === 'complete') {
+                break;
+              }
             } catch (error) {
-              attempts++;
-              await new Promise(resolve => setTimeout(resolve, 
-                selectedTransferMethod === 'fast' ? 3000 : 30000
-              ));
+              console.log(`Attempt ${attempts + 1}: Waiting for attestation...`);
             }
+            attempts++;
+            await new Promise(resolve => setTimeout(resolve, 
+              selectedTransferMethod === 'fast' ? 5000 : 30000
+            ));
           }
 
-          if (!attestation!) {
+          if (!messageData || messageData.messages.length === 0 || messageData.messages[0].status !== 'complete') {
             updateRecipient(recipient.id, { 
               status: 'failed', 
-              error: 'Attestation timeout' 
+              error: 'Attestation timeout or not available' 
             });
             continue;
           }
 
+          const message = messageData.messages[0];
+          
           updateRecipient(recipient.id, { 
             status: 'minting', 
-            attestationHash: attestation 
+            attestationHash: message.attestation 
           });
 
-          // Execute mint transaction
+          // Execute mint transaction with message and attestation
           const mintTxHash = await cctpService.mintUSDC(
-            attestation, 
-            burnTxHash, 
+            message.message, 
+            message.attestation, 
             recipient.chainId
           );
 
@@ -129,7 +138,8 @@ export const useCCTP = () => {
     try {
       const cctpService = new CCTPService(
         walletService.getProvider()!,
-        walletService.getSigner()!
+        walletService.getSigner()!,
+        isTestnet
       );
 
       const fees = await cctpService.estimateFees(recipients, selectedTransferMethod);
