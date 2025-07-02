@@ -147,11 +147,11 @@ export class CCTPService {
       
       let burnTx;
       if (transferMethod === 'fast') {
-        // For fast transfers, use depositForBurn with maxFee and lower finality threshold
-        const maxFee = parseUnits('1', 6); // 1 USDC max fee for fast transfer
-        const minFinalityThreshold = 200; // Lower threshold for fast transfer
+        // Fast Transfer: minFinalityThreshold ≤ 1000, maxFee covers Fast Transfer fee (currently 0 bps = 0%)
+        const maxFee = parseUnits('0.01', 6); // Small maxFee for Fast Transfer (0.01 USDC)
+        const minFinalityThreshold = 1000; // Fast Transfer threshold (confirmed level)
         
-        console.log('Calling depositForBurn for fast transfer with params:', {
+        console.log('Calling depositForBurn for Fast Transfer with params:', {
           amount: amount.toString(),
           destinationDomain: destChain.cctpDomain,
           mintRecipient: mintRecipient,
@@ -171,11 +171,11 @@ export class CCTPService {
           minFinalityThreshold
         );
       } else {
-        // Standard transfer - no fee, higher finality threshold
-        const maxFee = 0; // No fee for standard transfer
-        const minFinalityThreshold = 2000; // Standard finality threshold
+        // Standard Transfer: minFinalityThreshold = 2000, maxFee = 0 (no fee)
+        const maxFee = 0; // Standard Transfer has no fee
+        const minFinalityThreshold = 2000; // Standard Transfer threshold (finalized level)
         
-        console.log('Calling depositForBurn for standard transfer with params:', {
+        console.log('Calling depositForBurn for Standard Transfer with params:', {
           amount: amount.toString(),
           destinationDomain: destChain.cctpDomain,
           mintRecipient: mintRecipient,
@@ -197,10 +197,22 @@ export class CCTPService {
       }
 
       const receipt = await burnTx.wait();
+      console.log('Burn transaction successful:', receipt.hash);
       return receipt.hash;
     } catch (error) {
       console.error('Burn failed:', error);
-      throw error;
+      
+      // Enhanced error handling with specific error details
+      const err = error as any;
+      if (err.code === 'UNPREDICTABLE_GAS_LIMIT') {
+        throw new Error(`Transaction will likely fail. This could be due to:\n- Insufficient USDC balance\n- Insufficient ETH for gas\n- Incorrect contract address\n- Invalid function parameters\n\nOriginal error: ${err.message}`);
+      } else if (err.code === 'INSUFFICIENT_FUNDS') {
+        throw new Error(`Insufficient funds for transaction. Please check your ETH balance for gas fees.`);
+      } else if (err.message?.includes('revert')) {
+        throw new Error(`Smart contract reverted: ${err.message}`);
+      } else {
+        throw new Error(`Transaction failed: ${err.message || err}`);
+      }
     }
   }
 

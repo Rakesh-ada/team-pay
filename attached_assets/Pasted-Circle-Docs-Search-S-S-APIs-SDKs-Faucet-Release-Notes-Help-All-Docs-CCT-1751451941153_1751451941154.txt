@@ -1,0 +1,116 @@
+Circle Docs
+
+Search
+⌥ + S
+⌥ + S
+APIs & SDKs
+
+Faucet
+
+Release Notes
+
+Help
+
+All Docs
+CCTP
+
+CCTP Overview
+Supported Blockchains
+CCTP APIs
+CCTP Sample Applications
+Concepts
+Generalized Message Passing
+Message Format
+Supported Domains
+Finality Thresholds and Fees
+Limits
+Required Block Confirmations
+Contract Addresses and Interfaces
+Noble Cosmos Module
+Solana Programs
+Sui Packages
+Aptos Packages
+Quickstart: Cross-chain USDC transfer
+FAQ
+API Reference
+All Docs
+/CCTP
+/Concepts
+Generalized Message Passing
+CCTP architecture on EVM and non-EVM domains for CCTP V1 and CCTP V2
+Cross-Chain Transfer Protocol (CCTP) uses generalized message passing to facilitate the native burning and minting of USDC across supported blockchains, also known as domains. Message passing is a three-step process:
+
+An onchain component on the source domain emits a message.
+Circle's offchain attestation service signs the message.
+The onchain component at the destination domain receives the message, and forwards the message body to the specified recipient.
+
+Architecture
+Onchain components on all domains have the same purpose, but implementation differs between EVM-compatible and non-EVM domains. Also, there are both implementation and naming differences between CCTP V1 and CCTP V2 due to the addition of Fast Transfer and other improvements.
+
+
+CCTP on EVM Domains
+Select the CCTP version below for a summary of the implementation and naming for each version:
+
+CCTP V1
+The relationship between CCTP V2's onchain components and Circle's offchain Attestation Service is illustrated below for a burn-and-mint of USDC between EVM-compatible domains:
+
+
+On EVM domains, the onchain component for cross-chain burning and minting is called TokenMessengerV2, which is built on top of MessageTransmitterV2, an onchain component for generalized message passing.
+
+In the diagram above, a token depositor calls the TokenMessengerV2#depositForBurn function to deposit a native token (such as USDC), which delegates to the TokenMinterV2 contract to burn the token. The TokenMessengerV2 contract then sends a message via the MessageTransmitterV2#sendMessage function. After sufficient block confirmations, Circle's offchain attestation service, Iris, signs the message. An API consumer queries this attestation and submits it onchain to the destination domain's MessageTransmitterV2#receiveMessage function.
+
+To send an arbitrary message, directly call MessageTransmitterV2#sendMessage. The message recipient must implement the following methods to handle messages based on their finality threshold:
+
+Implement IMessageHandlerV2#handleReceiveFinalizedMessage to receive messages with finalityThresholdExecuted ≥ 2000.
+Implement IMessageHandlerV2#handleReceiveUnfinalizedMessage to receive messages with finalityThresholdExecuted < 2000.
+This distinction allows the recipient to control the level of finality it requires before accepting a message.
+
+
+Hooks
+Hooks in CCTP V2 are designed as metadata that can be attached to a burn message, allowing integrators to execute custom logic at the destination chain. The execution of Hooks is left to third-party integrators, offering flexibility while maintaining a separation of concerns from the core CCTP protocol. Below is an outline of the key design considerations:
+
+
+Key Features
+Maximum Flexibility
+
+Hooks provide integrators with control over operations like:
+Atomicity. Handling recovery from a failed hook execution.
+Execution Timing. Determining whether to execute the Hook pre-mint or post-mint.
+Consistency with the destinationCaller Pattern
+
+CCTP V2 continues the destinationCaller model from CCTP V1. In this approach, the destinationCaller specified in the message is typically responsible for handling the Hook execution. This ensures minimal changes for integrators familiar with the CCTP V1 pattern.
+
+CCTP on Non-EVM Domains
+Note: Non-EVM Domains are currently supported via CCTP V1.
+
+
+Noble
+Noble is a Cosmos application-specific blockchain (or "appchain") that provides native asset issuance for the Cosmos ecosystem. USDC is natively issued on Noble and can be transferred via the Inter-Blockchain Communication (IBC) protocol to other supported appchains in Cosmos, or via CCTP V1 to any supported domain (for example, Ethereum).
+
+Note that there are key differences between Cosmos appchains like Noble and EVM-compatible blockchains. Unlike on EVM domains where CCTP V1 is a set of smart contracts, CCTP V1 on Noble is a Cosmos SDK module, which is deployed by Noble governance and built into the Noble blockchain. Cosmos appchains can use IBC to build composable flows with CCTP V1 on Noble. Refer to the Noble documentation for more details.
+
+
+Solana
+Solana is a layer-1 blockchain where USDC is natively issued as an SPL-token. CCTP V1 and V2 are deployed to Solana as two Anchor programs: MessageTransmitter and TokenMessengerMinter. Developers can compose programs on top of CCTP V1 and V2 programs through CPI's (Cross-Program Invocations). Arbitrary messages can be sent directly by calling MessageTransmitter#send_message just as described in the EVM section above. Refer to the Solana documentation for more details.
+
+
+Sui
+Sui is another layer-1 blockchain where USDC is natively issued as a Coin implementation. CCTP V1 is deployed to Sui as two programs: MessageTransmitter and TokenMessengerMinter. Arbitrary messages can be sent by directly calling message_transmitter::send_message similar to the EVM section above. Refer to the Sui documentation for more details.
+
+
+Aptos
+Aptos is another layer-1 blockchain where USDC is natively issued as a FA implementation. CCTP V1 is deployed to Aptos as two programs: MessageTransmitter and TokenMessengerMinter. Arbitrary messages can be sent by directly calling message_transmitter::send_message similar to the EVM section above. Refer to the Aptos documentation for more details.
+
+Did this page help you?
+
+Yes
+
+No
+© 2023-2025 Circle Technology Services, LLC. All rights reserved.
+Developer Terms
+Service Terms
+Privacy Policy
+Acceptable Use
+Your Privacy ChoicesYour Privacy Choices
+Cookie Policy
+Generalized Message Passing

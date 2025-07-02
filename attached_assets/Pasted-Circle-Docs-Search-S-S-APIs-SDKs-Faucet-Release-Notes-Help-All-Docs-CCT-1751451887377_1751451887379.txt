@@ -1,0 +1,76 @@
+Circle Docs
+
+Search
+⌥ + S
+⌥ + S
+APIs & SDKs
+
+Faucet
+
+Release Notes
+
+Help
+
+All Docs
+CCTP
+
+CCTP Overview
+Supported Blockchains
+CCTP APIs
+CCTP Sample Applications
+Concepts
+Required Block Confirmations
+Contract Addresses and Interfaces
+Noble Cosmos Module
+Solana Programs
+Sui Packages
+Aptos Packages
+Quickstart: Cross-chain USDC transfer
+FAQ
+API Reference
+All Docs
+/CCTP
+/CCTP APIs
+CCTP APIs
+CCTP provides a set of API hosts and endpoints to manage messages, attestations, and transaction details for your cross-chain USDC transfers.
+
+
+CCTP API Service Hosts
+Environment	URL
+Testnet	https://iris-api-sandbox.circle.com
+Mainnet	https://iris-api.circle.com
+
+CCTP API Endpoints
+Select the CCTP version below for a summary of API endpoints supported by each version:
+
+CCTP V1
+CCTP V2 endpoints enable advanced functionality such as fetching attestations for Standard Transfer or Fast Transfer burn events, verifying public keys across versions, accessing transaction details, querying fast transfer allowances and fees, and initiating re-attestation processes. Below is an overview of the CCTP V2 public endpoints. Click on any endpoint for its API reference.
+
+Endpoint	Description	Use Case
+GET /v2/publicKeys	Returns public keys for validating attestations across both supported versions of CCTP (V1 and V2).	Retrieve public keys to verify attestation authenticity for cross-chain transactions.
+GET /v2/messages/:sourceDomainId	Retrieves messages and attestations for a given transaction or nonce, supporting both V1 and V2 messages.	Fetch attestation status and transaction details.
+POST /v2/reattest/:nonce	Re-attests a soft finality V2 message to achieve finality or revive expired Fast Transfer burns.	Handle edge cases requiring updated attestations or finalize transactions with stricter rules.
+GET /v2/fastBurn/USDC/allowance	Retrieves the current USDC Fast Transfer allowance remaining.	Monitor available allowance for Fast Transfer burns in real-time.
+GET /v2/fastBurn/USDC/fees/:sourceDomainId/:destDomainId (deprecated*)	Returns the fees for USDC Fast Transfers between specified source and destination domains.	Calculate transaction costs before initiating a Fast Transfer.
+GET /v2/burn/USDC/fees/:sourceDomainId/:destDomainId	Returns the fees for USDC transfers between specified source and destination domains.	Calculate transaction costs before initiating a Fast or Standard Transfer.
+Deprecated endpoint (*)
+
+Integrators should use the /v2/burn endpoint (instead of /v2/fastBurn) to retrieve both Fast and Standard Transfer fees.
+
+API Service Rate Limit
+
+The CCTP API service rate limit is 35 requests per second. If you exceed 35 requests per second, the service blocks all API requests for the next 5 minutes and returns an HTTP 429 response.
+
+Did this page help you?
+
+Yes
+
+No
+© 2023-2025 Circle Technology Services, LLC. All rights reserved.
+Developer Terms
+Service Terms
+Privacy Policy
+Acceptable Use
+Your Privacy ChoicesYour Privacy Choices
+Cookie Policy
+CCTP APIs

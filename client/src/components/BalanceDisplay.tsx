@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/useAppStore';
-import { CheckCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
 
 export default function BalanceDisplay() {
-  const { wallet, recipients } = useAppStore();
+  const { wallet, recipients, isTestnet } = useAppStore();
 
   const totalNeeded = recipients.reduce((sum, r) => sum + parseFloat(r.amount || '0'), 0);
   const currentBalance = parseFloat(wallet.balance || '0');
@@ -45,6 +46,24 @@ export default function BalanceDisplay() {
               </>
             )}
           </div>
+          
+          {/* Testnet USDC Faucet Helper */}
+          {isTestnet && currentBalance === 0 && (
+            <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+              <p className="text-sm text-blue-300 mb-2">
+                Need testnet USDC? Get some from the Circle faucet:
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full bg-blue-500/10 border-blue-500/30 text-blue-300 hover:bg-blue-500/20"
+                onClick={() => window.open('https://faucet.circle.com/', '_blank')}
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Get Testnet USDC
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
