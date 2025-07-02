@@ -8,12 +8,13 @@ import FeeEstimation from '@/components/FeeEstimation';
 import BalanceDisplay from '@/components/BalanceDisplay';
 import SettingsPanel from '@/components/SettingsPanel';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { useAppStore } from '@/store/useAppStore';
 import { useCCTP } from '@/hooks/useCCTP';
-import { NotebookPen } from 'lucide-react';
+import { NotebookPen, AlertTriangle } from 'lucide-react';
 
 export default function Home() {
-  const { recipients, wallet } = useAppStore();
+  const { recipients, wallet, isTestnet } = useAppStore();
   const { executeBulkTransfer, isExecuting, estimateFees } = useCCTP();
 
   useEffect(() => {
@@ -23,6 +24,11 @@ export default function Home() {
   }, [recipients, wallet.isConnected, estimateFees]);
 
   const canExecute = wallet.isConnected && recipients.length > 0 && recipients.some(r => r.status === 'ready');
+
+  // Check for network compatibility issues
+  const isMainnet = wallet.chainId === 1 || wallet.chainId === 137 || wallet.chainId === 42161 || wallet.chainId === 8453 || wallet.chainId === 10 || wallet.chainId === 43114;
+  const isTestnetChain = wallet.chainId === 11155111 || wallet.chainId === 421614 || wallet.chainId === 84532;
+  const hasNetworkMismatch = wallet.isConnected && ((isMainnet && isTestnet) || (isTestnetChain && !isTestnet));
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-50">
@@ -46,6 +52,25 @@ export default function Home() {
           </div>
         </div>
       </header>
+
+      {/* Network Mismatch Warning */}
+      {hasNetworkMismatch && (
+        <div className="bg-red-500/10 border-l-4 border-red-500 p-4 mx-4 sm:mx-6 lg:mx-8 mt-4">
+          <div className="flex">
+            <AlertTriangle className="h-5 w-5 text-red-500 mr-3 mt-0.5" />
+            <div>
+              <h3 className="text-red-400 font-medium">Network Mismatch Detected</h3>
+              <p className="text-red-300 text-sm mt-1">
+                {isMainnet && isTestnet ? (
+                  <>You're connected to <strong>mainnet</strong> but the app is in <strong>testnet mode</strong>. Switch to testnet mode in settings or connect to a testnet network like Sepolia.</>
+                ) : (
+                  <>You're connected to <strong>testnet</strong> but the app is in <strong>mainnet mode</strong>. Switch to mainnet mode in settings or connect to a mainnet network like Ethereum.</>
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

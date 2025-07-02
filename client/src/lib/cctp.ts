@@ -82,6 +82,18 @@ export class CCTPService {
       console.log('Source chain:', sourceChain);
       console.log('Is testnet:', this.isTestnet);
       
+      // Check if we're on mainnet vs testnet mismatch
+      const isMainnet = chainId === 1 || chainId === 137 || chainId === 42161 || chainId === 8453 || chainId === 10 || chainId === 43114;
+      const isTestnet = chainId === 11155111 || chainId === 421614 || chainId === 84532;
+      
+      if (isMainnet && this.isTestnet) {
+        throw new Error('Network mismatch: You are connected to a mainnet but the app is set to testnet mode. Please switch to testnet mode or connect to a testnet network.');
+      }
+      
+      if (isTestnet && !this.isTestnet) {
+        throw new Error('Network mismatch: You are connected to a testnet but the app is set to mainnet mode. Please switch to mainnet mode or connect to a mainnet network.');
+      }
+      
       if (!sourceChain) {
         throw new Error(`Unsupported source chain: ${chainId}. Supported chains: ${supportedChains.map(c => c.name).join(', ')}`);
       }

@@ -106,12 +106,12 @@ export const CCTP_V2_CONTRACTS = {
 // CCTP V2 Contract Addresses (Testnet) - Official Circle addresses from documentation
 export const CCTP_V2_TESTNET_CONTRACTS = {
   tokenMessengerV2: '0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA', // TokenMessenger
-  messageTransmitterV2: '0x9f3B8679c73C2Fef8b59B4f3444d4e156fb70AA5', // MessageTransmitter  
+  messageTransmitterV2: '0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275', // MessageTransmitter - CORRECTED
   tokenMinterV2: '0xb43db544E2c27092c107639Ad201b3dEfAbcF192', // TokenMinter
   messageV2: '0xbaC0179bB358A8936169a63408C8481D582390C4', // Message
   // Legacy V1 contracts
   tokenMessenger: '0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA',
-  messageTransmitter: '0x9f3B8679c73C2Fef8b59B4f3444d4e156fb70AA5',
+  messageTransmitter: '0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275',
   tokenMinter: '0xb43db544E2c27092c107639Ad201b3dEfAbcF192'
 };
 
