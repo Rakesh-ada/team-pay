@@ -449,13 +449,23 @@ export class CCTPService {
     total: string;
   }> {
     try {
-      // Get network fees estimation
-      const feeData = await this.provider.getFeeData();
-      const gasPrice = feeData.gasPrice || parseUnits('20', 'gwei');
-      const estimatedGas = recipients.length * 150000; // Gas per transfer
-      
-      const networkFees = gasPrice * BigInt(estimatedGas);
-      const networkFeesUSD = Number(formatEther(networkFees)) * 2000; // Assume ETH = $2000
+      // Check if provider is still valid before making calls
+      let networkFeesUSD = 15; // Default fallback
+      try {
+        const feeData = await this.provider.getFeeData();
+        const gasPrice = feeData.gasPrice || parseUnits('20', 'gwei');
+        const estimatedGas = recipients.length * 150000; // Gas per transfer
+        
+        const networkFees = gasPrice * BigInt(estimatedGas);
+        networkFeesUSD = Number(formatEther(networkFees)) * 2000; // Assume ETH = $2000
+      } catch (networkError: any) {
+        // Handle network change errors gracefully
+        if (networkError.code === 'NETWORK_ERROR' || networkError.event === 'changed') {
+          console.warn('Network change detected during fee estimation, using fallback for network fees');
+        } else {
+          console.warn('Could not fetch network fees, using fallback:', networkError);
+        }
+      }
 
       // Get real CCTP fees if possible
       let cctpFeesUSD = 0;
@@ -475,8 +485,13 @@ export class CCTPService {
               }
             }
           }
-        } catch (error) {
-          console.warn('Could not fetch real CCTP fees, using fallback:', error);
+        } catch (error: any) {
+          // Handle network change errors gracefully
+          if (error.code === 'NETWORK_ERROR' || error.event === 'changed') {
+            console.warn('Network change detected during CCTP fee estimation, using fallback');
+          } else {
+            console.warn('Could not fetch real CCTP fees, using fallback:', error);
+          }
           // Fallback fee estimation
           cctpFeesUSD = transferMethod === 'fast' ? recipients.length * 0.5 : 0;
         }
@@ -489,8 +504,13 @@ export class CCTPService {
         cctpFees: `~$${cctpFeesUSD.toFixed(2)}`,
         total: `~$${total.toFixed(2)}`
       };
-    } catch (error) {
-      console.error('Fee estimation failed:', error);
+    } catch (error: any) {
+      // Handle network change errors gracefully
+      if (error.code === 'NETWORK_ERROR' || error.event === 'changed') {
+        console.warn('Network change detected during fee estimation, using fallback');
+      } else {
+        console.error('Fee estimation failed:', error);
+      }
       
       // Fallback estimation
       return {

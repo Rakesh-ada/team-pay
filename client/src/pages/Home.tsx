@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import WalletConnect from '@/components/WalletConnect';
 import TransferMethodSelector from '@/components/TransferMethodSelector';
 import RecipientManager from '@/components/RecipientManager';
@@ -14,14 +14,33 @@ import { useCCTP } from '@/hooks/useCCTP';
 import { NotebookPen, AlertTriangle } from 'lucide-react';
 
 export default function Home() {
-  const { recipients, wallet, isTestnet } = useAppStore();
+  const { recipients, wallet, isTestnet, selectedTransferMethod } = useAppStore();
   const { executeBulkTransfer, isExecuting, estimateFees } = useCCTP();
+  const debounceTimer = useRef<NodeJS.Timeout>();
+
+  // Debounced fee estimation to avoid rapid calls during network changes
+  const debouncedEstimateFees = useCallback(() => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    
+    debounceTimer.current = setTimeout(() => {
+      if (recipients.length > 0 && wallet.isConnected && wallet.chainId) {
+        estimateFees();
+      }
+    }, 1000); // Wait 1 second after last change before estimating fees
+  }, [recipients, wallet.isConnected, wallet.chainId, selectedTransferMethod, estimateFees]);
 
   useEffect(() => {
-    if (recipients.length > 0 && wallet.isConnected) {
-      estimateFees();
-    }
-  }, [recipients, wallet.isConnected, estimateFees]);
+    debouncedEstimateFees();
+    
+    // Cleanup timeout on unmount
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [debouncedEstimateFees]);
 
   const canExecute = wallet.isConnected && recipients.length > 0 && recipients.some(r => r.status === 'ready');
 
