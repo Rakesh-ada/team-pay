@@ -1,0 +1,200 @@
+import { useState } from 'react';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useAppStore } from '@/store/useAppStore';
+import { SUPPORTED_CHAINS, TESTNET_CHAINS } from '@/lib/constants';
+import { Plus, Upload, Trash2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+export default function RecipientManager() {
+  const { recipients, addRecipient, removeRecipient, isTestnet } = useAppStore();
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [newRecipient, setNewRecipient] = useState({
+    address: '',
+    chainId: 1,
+    amount: ''
+  });
+
+  const availableChains = isTestnet ? TESTNET_CHAINS : SUPPORTED_CHAINS;
+
+  const handleAddRecipient = () => {
+    const chain = availableChains.find(c => c.id === newRecipient.chainId)!;
+    addRecipient({
+      address: newRecipient.address,
+      chainId: newRecipient.chainId,
+      chainName: chain.name,
+      amount: newRecipient.amount,
+      status: 'ready'
+    });
+    setNewRecipient({ address: '', chainId: 1, amount: '' });
+    setShowAddDialog(false);
+  };
+
+  const getStatusBadge = (status: string) => {
+    const statusStyles = {
+      ready: 'bg-slate-600/50 text-slate-300',
+      pending: 'bg-amber-500/20 text-amber-400',
+      burning: 'bg-orange-500/20 text-orange-400',
+      attesting: 'bg-blue-500/20 text-blue-400',
+      minting: 'bg-purple-500/20 text-purple-400',
+      completed: 'bg-emerald-500/20 text-emerald-400',
+      failed: 'bg-red-500/20 text-red-400'
+    };
+
+    return (
+      <span className={`px-2 py-1 rounded text-xs font-medium ${statusStyles[status as keyof typeof statusStyles]}`}>
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </span>
+    );
+  };
+
+  const getChainColor = (chainName: string) => {
+    const colors = {
+      'Ethereum': 'bg-red-500',
+      'Polygon': 'bg-purple-500',
+      'Arbitrum': 'bg-blue-500',
+      'Base': 'bg-blue-600',
+      'OP Mainnet': 'bg-red-600',
+      'Avalanche': 'bg-red-500'
+    };
+    return colors[chainName as keyof typeof colors] || 'bg-gray-500';
+  };
+
+  return (
+    <Card className="bg-slate-800 border-slate-700">
+      <CardHeader>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+          <h2 className="text-lg font-semibold text-white">Recipients</h2>
+          <div className="flex items-center space-x-3">
+            <Button
+              variant="outline"
+              className="bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Import CSV
+            </Button>
+            <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+              <DialogTrigger asChild>
+                <Button className="bg-blue-500 hover:bg-blue-600 text-white">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Recipient
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-slate-800 border-slate-700">
+                <DialogHeader>
+                  <DialogTitle className="text-white">Add New Recipient</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-300">Address</label>
+                    <Input
+                      value={newRecipient.address}
+                      onChange={(e) => setNewRecipient({ ...newRecipient, address: e.target.value })}
+                      placeholder="0x..."
+                      className="bg-slate-700 border-slate-600 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-300">Chain</label>
+                    <Select
+                      value={newRecipient.chainId.toString()}
+                      onValueChange={(value) => setNewRecipient({ ...newRecipient, chainId: parseInt(value) })}
+                    >
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-700 border-slate-600">
+                        {availableChains.map((chain) => (
+                          <SelectItem key={chain.id} value={chain.id.toString()}>
+                            {chain.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-300">Amount (USDC)</label>
+                    <Input
+                      value={newRecipient.amount}
+                      onChange={(e) => setNewRecipient({ ...newRecipient, amount: e.target.value })}
+                      placeholder="100.00"
+                      type="number"
+                      step="0.01"
+                      className="bg-slate-700 border-slate-600 text-white"
+                    />
+                  </div>
+                  <Button onClick={handleAddRecipient} className="w-full bg-blue-500 hover:bg-blue-600">
+                    Add Recipient
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="p-0">
+        {recipients.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-slate-700">
+                  <th className="text-left p-4 text-sm font-medium text-slate-300">Recipient Address</th>
+                  <th className="text-left p-4 text-sm font-medium text-slate-300">Destination Chain</th>
+                  <th className="text-left p-4 text-sm font-medium text-slate-300">Amount (USDC)</th>
+                  <th className="text-left p-4 text-sm font-medium text-slate-300">Status</th>
+                  <th className="text-center p-4 text-sm font-medium text-slate-300">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recipients.map((recipient) => (
+                  <tr key={recipient.id} className="border-b border-slate-700/50 hover:bg-slate-800/30">
+                    <td className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex-shrink-0"></div>
+                        <div>
+                          <div className="font-mono text-sm text-white">
+                            {recipient.address.slice(0, 20)}...
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center space-x-2">
+                        <div className={cn("w-4 h-4 rounded-full", getChainColor(recipient.chainName))}></div>
+                        <span className="text-sm text-white">{recipient.chainName}</span>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <span className="font-semibold text-white">{recipient.amount}</span>
+                    </td>
+                    <td className="p-4">
+                      {getStatusBadge(recipient.status)}
+                    </td>
+                    <td className="p-4 text-center">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeRecipient(recipient.id)}
+                        className="text-slate-400 hover:text-red-400 hover:bg-red-500/10"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="p-6 text-center text-slate-400">
+            <Plus className="w-8 h-8 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">Add recipients manually or import from CSV</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
