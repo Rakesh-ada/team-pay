@@ -221,7 +221,13 @@ export class CCTPService {
       
       // Enhanced error handling with specific error details
       const err = error as any;
-      if (err.code === 'UNPREDICTABLE_GAS_LIMIT') {
+      
+      // Handle user rejection gracefully
+      if (err.code === 'ACTION_REJECTED' || err.code === 4001 || 
+          (err.message && err.message.includes('user denied')) ||
+          (err.message && err.message.includes('User denied'))) {
+        throw new Error('Transaction cancelled by user');
+      } else if (err.code === 'UNPREDICTABLE_GAS_LIMIT') {
         throw new Error(`Transaction will likely fail. This could be due to:\n- Insufficient USDC balance\n- Insufficient ETH for gas\n- Incorrect contract address\n- Invalid function parameters\n\nOriginal error: ${err.message}`);
       } else if (err.code === 'INSUFFICIENT_FUNDS') {
         throw new Error(`Insufficient funds for transaction. Please check your ETH balance for gas fees.`);

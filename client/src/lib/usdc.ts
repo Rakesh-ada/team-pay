@@ -73,7 +73,14 @@ export class USDCService {
       // Return the first transaction hash as the primary reference
       return txHashes[0];
 
-    } catch (error) {
+    } catch (error: any) {
+      // Handle user rejection gracefully
+      if (error.code === 'ACTION_REJECTED' || error.code === 4001 || 
+          (error.message && error.message.includes('user denied')) ||
+          (error.message && error.message.includes('User denied'))) {
+        throw new Error('Transaction cancelled by user');
+      }
+      
       console.error('Same-chain transfer failed:', error);
       throw error;
     }

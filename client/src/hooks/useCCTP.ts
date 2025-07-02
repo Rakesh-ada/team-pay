@@ -64,10 +64,19 @@ export const useCCTP = () => {
 
           } catch (error) {
             console.error(`Failed to process same-chain recipient ${recipient.id}:`, error);
-            updateRecipient(recipient.id, { 
-              status: 'failed', 
-              error: error instanceof Error ? error.message : 'Unknown error'
-            });
+            
+            // Handle user cancellation gracefully
+            if (error instanceof Error && error.message === 'Transaction cancelled by user') {
+              updateRecipient(recipient.id, { 
+                status: 'ready', 
+                error: undefined 
+              });
+            } else {
+              updateRecipient(recipient.id, { 
+                status: 'failed', 
+                error: error instanceof Error ? error.message : 'Unknown error'
+              });
+            }
           }
         }
       }
@@ -166,10 +175,19 @@ export const useCCTP = () => {
 
           } catch (error) {
             console.error(`Failed to process cross-chain recipient ${recipient.id}:`, error);
-            updateRecipient(recipient.id, { 
-              status: 'failed', 
-              error: error instanceof Error ? error.message : 'Unknown error'
-            });
+            
+            // Handle user cancellation gracefully
+            if (error instanceof Error && error.message === 'Transaction cancelled by user') {
+              updateRecipient(recipient.id, { 
+                status: 'ready', 
+                error: undefined 
+              });
+            } else {
+              updateRecipient(recipient.id, { 
+                status: 'failed', 
+                error: error instanceof Error ? error.message : 'Unknown error'
+              });
+            }
           }
         }
       }
