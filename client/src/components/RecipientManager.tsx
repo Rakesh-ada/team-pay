@@ -283,15 +283,7 @@ export default function RecipientManager() {
                   Export CSV
                 </Button>
                 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDownloadSample}
-                  className="text-white border-white/20 hover:border-white/30"
-                >
-                  <FileText className="w-4 h-4 mr-2" />
-                  Sample
-                </Button>
+                
               </div>
 
               <div className="flex items-center gap-2">
