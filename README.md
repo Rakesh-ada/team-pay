@@ -1,70 +1,198 @@
-# Cross-Chain Pay
+# Team Pay - Cross-Chain USDC Payment Platform
 
-A React application for managing bulk payments of USDC across different blockchain networks using Circle's Cross-Chain Transfer Protocol (CCTP).
+<div align="center">
+<img src="attached_assets/image_1751520112204.png" alt="Team Pay Logo" width="200"/>
 
-## Features
+**Streamlined Cross-Chain USDC Bulk Payments with Circle's CCTP**
 
-- Connect cryptocurrency wallet
-- Select different transfer methods (same-chain, fast cross-chain, standard cross-chain)
-- Manage multiple payment recipients across different networks
-- Execute bulk payments to all recipients
-- Monitor transaction status and payment confirmations
-- Support for both mainnet and testnet environments
+[![Vercel](https://img.shields.io/badge/Vercel-Ready-black?style=flat&logo=vercel)](https://vercel.com)
+[![React](https://img.shields.io/badge/React-18-blue?style=flat&logo=react)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)
+[![CCTP](https://img.shields.io/badge/CCTP-V2-green?style=flat)](https://www.circle.com/en/cross-chain-transfer-protocol)
+</div>
 
-## Supported Networks
+## 🔍 The Problem
 
-- Ethereum
-- Polygon
-- Arbitrum
-- Base
-- Optimism
-- Avalanche
-- Linea
+Organizations and DAOs face significant challenges when making bulk payments across different blockchain networks:
 
-## Deployment to Vercel
+- **Complex Operations**: Handling multiple transactions across chains requires technical expertise
+- **Time Consumption**: Manual transfers are time-intensive and error-prone
+- **High Costs**: Individual transfers accumulate unnecessary gas fees and network costs
+- **Fragmented Experience**: Different wallets and interfaces for each chain create friction
+- **Limited Tracking**: No consolidated view of cross-chain payment status
+- **Security Concerns**: Manual processes increase the risk of errors and losses
 
-This project is configured for easy deployment to Vercel.
+## 💡 The Solution
 
-### One-Click Deployment
+Team Pay streamlines the process of sending USDC payments to multiple recipients across different blockchain networks:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyour-username%2Fcross-chain-pay)
+- **Unified Interface**: Manage all cross-chain transfers from a single dashboard
+- **Batch Processing**: Send to multiple recipients with one approval flow
+- **Cost Optimization**: Reduce gas fees through optimized transaction batching
+- **Real-time Tracking**: Monitor transaction status across all chains
+- **Flexible Transfer Options**: Choose between speed (Fast Transfer) and cost (Standard Transfer)
+- **Enhanced Security**: Reduced manual steps minimize human error
+- **Regulatory Compliance**: Leveraging Circle's compliant USDC infrastructure
 
-### Manual Deployment
+## 🚀 Key Features
 
-1. Fork or clone this repository
-2. Sign up or log in to [Vercel](https://vercel.com)
-3. Create a new project and import your repository
-4. Configure environment variables (if needed)
-5. Deploy!
+- **Multi-Chain Support**: Transfer USDC across 7 major networks
+- **Bulk Transfers**: Send to multiple recipients in one operation
+- **CSV Import**: Upload recipient lists from spreadsheets
+- **Fee Estimation**: Preview costs before committing
+- **Transaction Monitoring**: Real-time status tracking
+- **Network Detection**: Automatic chain identification
+- **Speed Options**: Fast (8-20s) or Standard (13-19m) transfers
+- **Balance Management**: Real-time USDC balance display
+- **History & Reporting**: Complete transaction audit trail
 
-## Local Development
+## 🔄 System Architecture Diagram
+
+```mermaid
+graph TB
+    subgraph "User Interface"
+        A[Wallet Connect] --> B[Recipient Manager]
+        B --> C[Transfer Method Selector]
+        C --> D[Payment Summary]
+        D --> E[Execute Payment]
+    end
+    
+    subgraph "Core Services"
+        E --> F[CCTP Service]
+        F --> G[Fee Estimator]
+        F --> H[Transaction Handler]
+    end
+    
+    subgraph "Blockchain Integration"
+        H --> I[Source Chain]
+        I --> J[Circle Attestation API]
+        J --> K[Destination Chain]
+    end
+    
+    subgraph "Status Tracking"
+        K --> L[Transaction Status]
+        L --> M[Live Feed]
+        M --> N[System Status]
+    end
+    
+    style A fill:#3b82f6,color:white
+    style E fill:#ef4444,color:white
+    style F fill:#10b981,color:white
+    style J fill:#8b5cf6,color:white
+    style L fill:#f59e0b,color:white
+```
+
+## 💻 Tech Stack
+
+### Frontend
+- **Framework**: React 18 with TypeScript
+- **State Management**: Zustand with persistence
+- **UI Components**: Radix UI + Tailwind CSS
+- **Data Fetching**: TanStack Query
+- **Routing**: Wouter
+- **Forms**: React Hook Form + Zod validation
+
+### Blockchain Integration
+- **CCTP Protocol**: Circle's Cross-Chain Transfer Protocol V2
+- **Wallet Connection**: MetaMask/Web3 providers
+- **Contract Interaction**: ethers.js v6
+- **Networks**: Ethereum, Polygon, Arbitrum, Base, Optimism, Avalanche, Linea
+
+### Backend (Serverless)
+- **API Routes**: Express.js with TypeScript
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: Session-based with passport.js
+- **Storage**: Memorystore for session persistence
+- **Deployment**: Vercel Edge Functions
+
+## 🌐 Supported Networks
+
+### Mainnet
+- Ethereum (CCTP domain 0)
+- Polygon (CCTP domain 7)
+- Arbitrum (CCTP domain 3)
+- Base (CCTP domain 6)
+- Optimism (CCTP domain 2)
+- Avalanche (CCTP domain 1)
+- Linea (CCTP domain 9)
+
+### Testnet
+- Sepolia (CCTP domain 0)
+- Arbitrum Sepolia (CCTP domain 3)
+- Base Sepolia (CCTP domain 6)
+- Avalanche Fuji (CCTP domain 1)
+- OP Sepolia (CCTP domain 2)
+- Polygon Amoy (CCTP domain 7)
+- Linea Sepolia (CCTP domain 9)
+- Sonic Testnet (CCTP domain 10)
+- Unichain Sepolia (CCTP domain 11)
+- World Chain Sepolia (CCTP domain 12)
+
+## 🔮 Future Integrations
+
+### LiFi Integration
+The roadmap includes integration with LiFi protocol to:
+- **Expand Network Support**: Support for 30+ blockchain networks
+- **Cross-Asset Swaps**: Convert between different assets during transfers
+- **Route Optimization**: Automatically find the most efficient transfer paths
+- **DEX Aggregation**: Access to better rates through multiple liquidity sources
+- **API Integration**: Seamless connection to LiFi's cross-chain infrastructure
+
+### MetaMask Card Integration
+Future support for MetaMask Card will enable:
+- **Fiat On/Off Ramps**: Direct conversion between USDC and local currencies
+- **Physical Card Payments**: Spend USDC at retail locations
+- **Card Management**: Issue and manage team payment cards
+- **Spending Controls**: Set limits and controls for team members
+- **Transaction Reconciliation**: Automatic tracking of card expenses
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ and npm
+- MetaMask or compatible Web3 wallet
+- USDC on supported networks
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/Rakesh-ada/team-pay.git
+cd team-pay
+
 # Install dependencies
 npm install
 
+# Create .env file
+cp .env.example .env
+# Update .env with your values
+
 # Start development server
 npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run start
 ```
 
-## Environment Variables
+### Deployment to Vercel
 
-Create a `.env` file in the root directory with the following variables:
+This project is configured for easy deployment to Vercel.
 
-```
-# Infura API Key for RPC Connections
-VITE_INFURA_API_KEY=your_infura_key_here
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FRakesh-ada%2Fteam-pay)
 
-# Environment mode
-VITE_ENVIRONMENT=production # or testnet
-```
+## 📋 Usage Flow
 
-## License
+1. **Connect Wallet**: Link your MetaMask or Web3 wallet
+2. **Add Recipients**: Enter addresses, select chains, and specify amounts
+3. **Select Transfer Method**: Choose Fast or Standard transfer
+4. **Review Summary**: Check recipient details and fee estimates
+5. **Execute Payment**: Approve and monitor transaction progress
+6. **Verify Results**: Confirm successful payments in the transaction log
 
-MIT 
+## 📝 License
+
+MIT
+
+## 🙏 Acknowledgements
+
+- [Circle CCTP Documentation](https://developers.circle.com/stablecoins/docs/cctp-getting-started)
+- [Radix UI Component Library](https://www.radix-ui.com/)
+- [Ethers.js Documentation](https://docs.ethers.org/v6/)
+- [Vercel Platform](https://vercel.com/)
