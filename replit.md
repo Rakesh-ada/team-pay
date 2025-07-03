@@ -1,4 +1,4 @@
-# CCTP Bulk Transfer Application
+# CCTP USDC Transfer Application
 
 ## Overview
 
