@@ -40,7 +40,7 @@ export default function WalletConnect() {
   // Get current network info
   const supportedChains = isTestnet ? TESTNET_CHAINS : SUPPORTED_CHAINS;
   const currentChain = chainId ? supportedChains.find(chain => chain.id === chainId) : null;
-  const networkName = currentChain?.name || (isConnected ? 'Unknown Network' : 'Not Connected');
+  const networkName = currentChain?.name || (isConnected ? 'Unknown Network' : 'None');
   const isValidChain = currentChain !== null;
 
   return (
