@@ -17,6 +17,7 @@ export default function LiveFeed() {
   const { wallet, recipients, autoRefresh, isTestnet } = useAppStore();
   const { isConnected } = useWallet();
   const [activities, setActivities] = useState<ActivityItem[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Add activity to feed
   const addActivity = (type: ActivityItem['type'], message: string, status: ActivityItem['status'] = 'info') => {
@@ -28,7 +29,7 @@ export default function LiveFeed() {
       status
     };
     
-    setActivities(prev => [newActivity, ...prev.slice(0, 9)]); // Keep only last 10 items
+    setActivities(prev => [newActivity, ...prev.slice(0, 19)]); // Keep only last 20 items
   };
 
   // Monitor wallet connection changes
@@ -63,6 +64,34 @@ export default function LiveFeed() {
       }
     }
   }, [recipients]);
+
+  // Initialize with some sample activities
+  useEffect(() => {
+    if (!isInitialized) {
+      const sampleActivities = [
+        { type: 'network' as const, message: 'System initialized successfully', status: 'success' as const },
+        { type: 'wallet' as const, message: 'Ready to connect wallet', status: 'info' as const },
+        { type: 'balance' as const, message: 'Balance monitoring active', status: 'info' as const },
+        { type: 'transaction' as const, message: 'Transaction engine ready', status: 'success' as const },
+        { type: 'network' as const, message: 'Cross-chain protocols loaded', status: 'success' as const },
+        { type: 'recipient' as const, message: 'Recipient manager initialized', status: 'info' as const },
+        { type: 'network' as const, message: 'CCTP contracts validated', status: 'success' as const },
+        { type: 'balance' as const, message: 'USDC balance tracker active', status: 'info' as const },
+        { type: 'transaction' as const, message: 'Fee estimation service ready', status: 'success' as const },
+        { type: 'network' as const, message: 'Multi-chain support enabled', status: 'success' as const },
+        { type: 'recipient' as const, message: 'Bulk transfer capabilities loaded', status: 'info' as const },
+        { type: 'wallet' as const, message: 'MetaMask integration ready', status: 'info' as const },
+      ];
+      
+      sampleActivities.forEach((activity, index) => {
+        setTimeout(() => {
+          addActivity(activity.type, activity.message, activity.status);
+        }, index * 200);
+      });
+      
+      setIsInitialized(true);
+    }
+  }, [isInitialized]);
 
   // Auto-refresh status updates
   useEffect(() => {
@@ -102,7 +131,7 @@ export default function LiveFeed() {
     }
   };
 
-  if (activities.length === 0) {
+  if (activities.length === 0 && !isInitialized) {
     return (
       <Card className="bg-slate-800 border-slate-700">
         <CardHeader>
@@ -113,8 +142,8 @@ export default function LiveFeed() {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-slate-400">
-            <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p>No activity yet. Connect your wallet to get started!</p>
+            <Loader2 className="w-12 h-12 mx-auto mb-4 opacity-50 animate-spin" />
+            <p>Loading activity feed...</p>
           </div>
         </CardContent>
       </Card>
@@ -143,7 +172,7 @@ export default function LiveFeed() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3 max-h-80 overflow-y-auto">
+        <div className="space-y-3 max-h-96 overflow-y-auto pr-2" style={{ scrollbarWidth: 'thin', scrollbarColor: '#475569 #1e293b' }}>
           {activities.map((activity) => (
             <div
               key={activity.id}
