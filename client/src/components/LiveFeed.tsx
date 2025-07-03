@@ -29,7 +29,7 @@ export default function LiveFeed() {
       status
     };
     
-    setActivities(prev => [newActivity, ...prev.slice(0, 19)]); // Keep only last 20 items
+    setActivities(prev => [newActivity, ...prev.slice(0, 1)]); // Keep only last 2 items
   };
 
   // Monitor wallet connection changes
