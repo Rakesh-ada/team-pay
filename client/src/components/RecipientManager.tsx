@@ -254,62 +254,56 @@ export default function RecipientManager() {
               </div>
             </div>
             
-            <div className="flex items-center justify-between gap-4">
-              {/* CSV Controls */}
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isImporting}
-                  className="text-white border-white/20 hover:border-white/30"
-                >
-                  {isImporting ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <Upload className="w-4 h-4 mr-2" />
-                  )}
-                  Import CSV
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCSVExport}
-                  disabled={recipients.length === 0}
-                  className="text-white border-white/20 hover:border-white/30"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export CSV
-                </Button>
-                
-                
-              </div>
-
-              <div className="flex items-center gap-2">
-                {recipients.length > 0 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={clearRecipients}
-                    className="text-red-400 border-red-400/20 hover:border-red-400/30"
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Clear All
-                  </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isImporting}
+                className="text-white border-white/20 hover:border-white/30"
+              >
+                {isImporting ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Upload className="w-4 h-4 mr-2" />
                 )}
+                Import CSV
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCSVExport}
+                disabled={recipients.length === 0}
+                className="text-white border-white/20 hover:border-white/30"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export CSV
+              </Button>
 
-                <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-                  <DialogTrigger asChild>
-                    <Button 
-                      size="sm"
-                      className="text-white border-cyan-400/30 hover:border-cyan-400/50 bg-cyan-400/10 hover:bg-cyan-400/20"
-                      onClick={handleOpenDialog}
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Recipient
-                    </Button>
-                  </DialogTrigger>
+              {recipients.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={clearRecipients}
+                  className="text-red-400 border-red-400/20 hover:border-red-400/30"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Clear All
+                </Button>
+              )}
+
+              <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+                <DialogTrigger asChild>
+                  <Button 
+                    size="sm"
+                    className="text-white border-cyan-400/30 hover:border-cyan-400/50 bg-cyan-400/10 hover:bg-cyan-400/20"
+                    onClick={handleOpenDialog}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Recipient
+                  </Button>
+                </DialogTrigger>
                   <DialogContent className="bg-gray-800 border-gray-700">
                     <DialogHeader>
                       <DialogTitle className="text-white">Add New Recipient</DialogTitle>
@@ -372,8 +366,8 @@ export default function RecipientManager() {
                     </div>
                   </DialogContent>
                 </Dialog>
-              </div>
             </div>
+          </div>
           </div>
         </CardHeader>
       <CardContent className="p-0">
