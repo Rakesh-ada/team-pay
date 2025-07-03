@@ -57,7 +57,21 @@ export default function TeamPay() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Users className="w-5 h-5 text-white" />
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-white">
+                  {/* Abstract geometric logo representing network/connections */}
+                  <path 
+                    d="M12 2L20 7V17L12 22L4 17V7L12 2Z" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    fill="none"
+                  />
+                  <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                  <path 
+                    d="M12 9V5M12 19V15M15 12H19M5 12H9" 
+                    stroke="currentColor" 
+                    strokeWidth="2"
+                  />
+                </svg>
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Team Pay</h1>
