@@ -118,10 +118,7 @@ export default function TeamPay() {
               <SystemStatus />
             </div>
 
-            {/* Transaction Status */}
-            <div className="bg-gray-800 rounded-lg border border-gray-700">
-              <TransactionStatus />
-            </div>
+            
           </div>
 
           {/* Sidebar */}
