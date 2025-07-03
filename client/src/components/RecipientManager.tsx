@@ -430,7 +430,7 @@ export default function RecipientManager() {
             </table>
           </div>
         ) : (
-          <div className="p-6 text-center text-slate-400">
+          <div className="p-12 text-center text-slate-400">
             <Plus className="w-8 h-8 mx-auto mb-2 opacity-50" />
             <p className="text-sm">Add recipients manually or import from CSV</p>
           </div>
