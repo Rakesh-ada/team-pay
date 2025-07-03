@@ -256,15 +256,15 @@ export default function RecipientManager() {
               </div>
             </div>
             
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center justify-between gap-4">
               {/* CSV Controls */}
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isImporting}
-                  className="glass-button text-white border-white/20 hover:border-white/30"
+                  className="text-white border-white/20 hover:border-white/30"
                 >
                   {isImporting ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -279,7 +279,7 @@ export default function RecipientManager() {
                   size="sm"
                   onClick={handleCSVExport}
                   disabled={recipients.length === 0}
-                  className="glass-button text-white border-white/20 hover:border-white/30"
+                  className="text-white border-white/20 hover:border-white/30"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Export CSV
@@ -289,101 +289,103 @@ export default function RecipientManager() {
                   variant="outline"
                   size="sm"
                   onClick={handleDownloadSample}
-                  className="glass-button text-white border-white/20 hover:border-white/30"
+                  className="text-white border-white/20 hover:border-white/30"
                 >
                   <FileText className="w-4 h-4 mr-2" />
                   Sample
                 </Button>
               </div>
 
-              {recipients.length > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={clearRecipients}
-                  className="glass-button text-red-400 border-red-400/20 hover:border-red-400/30"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Clear All
-                </Button>
-              )}
-
-              <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-                <DialogTrigger asChild>
-                  <Button 
+              <div className="flex items-center gap-2">
+                {recipients.length > 0 && (
+                  <Button
+                    variant="outline"
                     size="sm"
-                    className="glass-button text-white border-cyan-400/30 hover:border-cyan-400/50 bg-cyan-400/10 hover:bg-cyan-400/20"
-                    onClick={handleOpenDialog}
+                    onClick={clearRecipients}
+                    className="text-red-400 border-red-400/20 hover:border-red-400/30"
                   >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Recipient
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Clear All
                   </Button>
-                </DialogTrigger>
-              <DialogContent className="bg-gray-800 border-gray-700">
-                <DialogHeader>
-                  <DialogTitle className="text-white">Add New Recipient</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  {wallet.isConnected && filteredChains.length < availableChains.length && (
-                    <div className="p-3 bg-yellow-900/20 border border-yellow-700/30 rounded-lg">
-                      <p className="text-sm text-yellow-400">
-                        <strong>Note:</strong> Only showing chains with different CCTP domains than your current connected chain. 
-                        CCTP doesn't support transfers within the same domain.
-                      </p>
-                    </div>
-                  )}
-                  <div>
-                    <label className="text-sm font-medium text-gray-300">Address</label>
-                    <Input
-                      value={newRecipient.address}
-                      onChange={(e) => setNewRecipient({ ...newRecipient, address: e.target.value })}
-                      placeholder="0x..."
-                      className="bg-gray-700 border-gray-600 text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-300">Chain</label>
-                    <Select
-                      value={newRecipient.chainId.toString()}
-                      onValueChange={(value) => setNewRecipient({ ...newRecipient, chainId: parseInt(value) })}
+                )}
+
+                <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      size="sm"
+                      className="text-white border-cyan-400/30 hover:border-cyan-400/50 bg-cyan-400/10 hover:bg-cyan-400/20"
+                      onClick={handleOpenDialog}
                     >
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-slate-700 border-slate-600">
-                        {filteredChains.map((chain) => (
-                          <SelectItem key={chain.id} value={chain.id.toString()}>
-                            {chain.name}
-                          </SelectItem>
-                        ))}
-                        {filteredChains.length === 0 && (
-                          <div className="p-3 text-sm text-slate-400 text-center">
-                            No destination chains available. Please connect to a different source chain.
-                          </div>
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-slate-300">Amount (USDC)</label>
-                    <Input
-                      value={newRecipient.amount}
-                      onChange={(e) => setNewRecipient({ ...newRecipient, amount: e.target.value })}
-                      placeholder="100.00"
-                      type="number"
-                      step="0.01"
-                      className="bg-slate-700 border-slate-600 text-white"
-                    />
-                  </div>
-                  <Button onClick={handleAddRecipient} className="w-full bg-blue-500 hover:bg-blue-600">
-                    Add Recipient
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Recipient
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-gray-800 border-gray-700">
+                    <DialogHeader>
+                      <DialogTitle className="text-white">Add New Recipient</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      {wallet.isConnected && filteredChains.length < availableChains.length && (
+                        <div className="p-3 bg-yellow-900/20 border border-yellow-700/30 rounded-lg">
+                          <p className="text-sm text-yellow-400">
+                            <strong>Note:</strong> Only showing chains with different CCTP domains than your current connected chain. 
+                            CCTP doesn't support transfers within the same domain.
+                          </p>
+                        </div>
+                      )}
+                      <div>
+                        <label className="text-sm font-medium text-gray-300">Address</label>
+                        <Input
+                          value={newRecipient.address}
+                          onChange={(e) => setNewRecipient({ ...newRecipient, address: e.target.value })}
+                          placeholder="0x..."
+                          className="bg-gray-700 border-gray-600 text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-300">Chain</label>
+                        <Select
+                          value={newRecipient.chainId.toString()}
+                          onValueChange={(value) => setNewRecipient({ ...newRecipient, chainId: parseInt(value) })}
+                        >
+                          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-slate-700 border-slate-600">
+                            {filteredChains.map((chain) => (
+                              <SelectItem key={chain.id} value={chain.id.toString()}>
+                                {chain.name}
+                              </SelectItem>
+                            ))}
+                            {filteredChains.length === 0 && (
+                              <div className="p-3 text-sm text-slate-400 text-center">
+                                No destination chains available. Please connect to a different source chain.
+                              </div>
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-slate-300">Amount (USDC)</label>
+                        <Input
+                          value={newRecipient.amount}
+                          onChange={(e) => setNewRecipient({ ...newRecipient, amount: e.target.value })}
+                          placeholder="100.00"
+                          type="number"
+                          step="0.01"
+                          className="bg-slate-700 border-slate-600 text-white"
+                        />
+                      </div>
+                      <Button onClick={handleAddRecipient} className="w-full bg-blue-500 hover:bg-blue-600">
+                        Add Recipient
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
           </div>
-        </div>
-      </CardHeader>
+        </CardHeader>
       <CardContent className="p-0">
         {recipients.length > 0 ? (
           <div className="overflow-x-auto">

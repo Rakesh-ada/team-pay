@@ -65,30 +65,9 @@ export default function LiveFeed() {
     }
   }, [recipients]);
 
-  // Initialize with some sample activities
+  // Initialize component
   useEffect(() => {
     if (!isInitialized) {
-      const sampleActivities = [
-        { type: 'network' as const, message: 'System initialized successfully', status: 'success' as const },
-        { type: 'wallet' as const, message: 'Ready to connect wallet', status: 'info' as const },
-        { type: 'balance' as const, message: 'Balance monitoring active', status: 'info' as const },
-        { type: 'transaction' as const, message: 'Transaction engine ready', status: 'success' as const },
-        { type: 'network' as const, message: 'Cross-chain protocols loaded', status: 'success' as const },
-        { type: 'recipient' as const, message: 'Recipient manager initialized', status: 'info' as const },
-        { type: 'network' as const, message: 'CCTP contracts validated', status: 'success' as const },
-        { type: 'balance' as const, message: 'USDC balance tracker active', status: 'info' as const },
-        { type: 'transaction' as const, message: 'Fee estimation service ready', status: 'success' as const },
-        { type: 'network' as const, message: 'Multi-chain support enabled', status: 'success' as const },
-        { type: 'recipient' as const, message: 'Bulk transfer capabilities loaded', status: 'info' as const },
-        { type: 'wallet' as const, message: 'MetaMask integration ready', status: 'info' as const },
-      ];
-      
-      sampleActivities.forEach((activity, index) => {
-        setTimeout(() => {
-          addActivity(activity.type, activity.message, activity.status);
-        }, index * 200);
-      });
-      
       setIsInitialized(true);
     }
   }, [isInitialized]);
@@ -131,7 +110,7 @@ export default function LiveFeed() {
     }
   };
 
-  if (activities.length === 0 && !isInitialized) {
+  if (activities.length === 0) {
     return (
       <Card className="bg-slate-800 border-slate-700">
         <CardHeader>
@@ -142,8 +121,8 @@ export default function LiveFeed() {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-slate-400">
-            <Loader2 className="w-12 h-12 mx-auto mb-4 opacity-50 animate-spin" />
-            <p>Loading activity feed...</p>
+            <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
+            <p>No activity yet. Connect your wallet to get started!</p>
           </div>
         </CardContent>
       </Card>
@@ -161,7 +140,7 @@ export default function LiveFeed() {
           <div className="flex items-center space-x-2">
             {autoRefresh && (
               <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse mr-2"></div>
+                <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
                 Live
               </Badge>
             )}
