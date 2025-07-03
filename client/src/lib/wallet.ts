@@ -117,6 +117,47 @@ export class WalletService {
     }
   }
 
+  async getETHBalance(address: string, chainId: number): Promise<string> {
+    if (!this.provider) {
+      throw new Error('Provider not initialized');
+    }
+
+    try {
+      // Find the chain configuration to use the right RPC URL
+      const allChains = [...SUPPORTED_CHAINS, ...TESTNET_CHAINS];
+      const chain = allChains.find(c => c.id === chainId);
+      
+      if (!chain) {
+        return '0.00';
+      }
+
+      // If checking on the current network, use the existing provider
+      if (this.provider && (await this.provider.getNetwork()).chainId === BigInt(chainId)) {
+        const balance = await this.provider.getBalance(address);
+        return ethers.formatEther(balance);
+      } else {
+        // If checking on a different network, create a temporary provider
+        const tempProvider = new ethers.JsonRpcProvider(chain.rpcUrl);
+        const balance = await tempProvider.getBalance(address);
+        return ethers.formatEther(balance);
+      }
+    } catch (error) {
+      console.error('Failed to get ETH balance:', error);
+      return '0.00';
+    }
+  }
+
+  async hasZeroETHBalance(address: string, chainId: number): Promise<boolean> {
+    try {
+      const balance = await this.getETHBalance(address, chainId);
+      return parseFloat(balance) === 0;
+    } catch (error) {
+      console.error('Error checking ETH balance:', error);
+      // Return false to avoid showing warning on errors
+      return false;
+    }
+  }
+
   getProvider() {
     return this.provider;
   }
