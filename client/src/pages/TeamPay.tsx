@@ -50,31 +50,18 @@ export default function TeamPay() {
   const hasNetworkMismatch = wallet.isConnected && ((isMainnet && isTestnet) || (isTestnetChain && !isTestnet));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden glass-scrollbar">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute top-1/2 right-1/4 w-60 h-60 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-15 animate-pulse"></div>
-      </div>
-
+    <div className="min-h-screen bg-gray-900 relative">
       {/* Header */}
-      <header className="relative z-10 glass border-b border-white/10">
-        <div className="container mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Users className="w-6 h-6 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+      <header className="bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <Users className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                  Team Pay
-                </h1>
-                <p className="text-slate-300/80 text-sm">Cross-chain bulk USDC transfers powered by Circle CCTP</p>
+                <h1 className="text-xl font-bold text-white">Team Pay</h1>
+                <p className="text-gray-400 text-xs">Bulk USDC transfers</p>
               </div>
             </div>
             <WalletConnect />
@@ -84,13 +71,13 @@ export default function TeamPay() {
 
       {/* Network Mismatch Warning */}
       {hasNetworkMismatch && (
-        <div className="relative z-10 mx-6 mt-6">
-          <div className="glass-light border border-amber-400/30 rounded-2xl p-4 animate-pulse">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="bg-yellow-900/20 border border-yellow-700/30 rounded-lg p-4">
             <div className="flex items-center">
-              <AlertTriangle className="w-5 h-5 text-amber-400 mr-3 flex-shrink-0" />
+              <AlertTriangle className="w-5 h-5 text-yellow-400 mr-3 flex-shrink-0" />
               <div>
-                <p className="text-amber-300 font-medium">Network Configuration Mismatch</p>
-                <p className="text-amber-200/80 text-sm mt-1">
+                <p className="text-yellow-300 font-medium">Network Configuration Mismatch</p>
+                <p className="text-yellow-200/80 text-sm mt-1">
                   Your wallet is connected to {isMainnet ? 'Mainnet' : 'Testnet'} but the app is configured for {isTestnet ? 'Testnet' : 'Mainnet'}. 
                   Please switch the network mode in settings or connect to the appropriate network.
                 </p>
@@ -100,47 +87,47 @@ export default function TeamPay() {
         </div>
       )}
 
-      <main className="relative z-10 container mx-auto px-6 py-8 glass-scrollbar">
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
-          <div className="xl:col-span-3 space-y-6">
+          <div className="lg:col-span-2 space-y-6">
             {/* Transfer Method Selector */}
-            <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="bg-gray-800 rounded-lg border border-gray-700">
               <TransferMethodSelector />
             </div>
 
             {/* Recipient Manager */}
-            <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="bg-gray-800 rounded-lg border border-gray-700">
               <RecipientManager />
             </div>
 
             {/* Transaction Status */}
-            <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="bg-gray-800 rounded-lg border border-gray-700">
               <TransactionStatus />
             </div>
           </div>
 
           {/* Sidebar */}
-          <div className="xl:col-span-1 space-y-6">
+          <div className="space-y-6">
             {/* Payment Summary */}
-            <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="bg-gray-800 rounded-lg border border-gray-700">
               <PaymentSummary />
             </div>
 
             {/* Fee Estimation */}
-            <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="bg-gray-800 rounded-lg border border-gray-700">
               <FeeEstimation />
             </div>
 
             {/* Balance Display */}
-            <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="bg-gray-800 rounded-lg border border-gray-700">
               <BalanceDisplay />
             </div>
             
             {/* Execute Button */}
-            <div className="glass-card rounded-2xl p-6">
+            <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
               <Button
-                className="w-full glass-button rounded-xl py-4 text-lg font-semibold text-white transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={executeBulkTransfer}
                 disabled={!canExecute || isExecuting}
               >
@@ -157,24 +144,24 @@ export default function TeamPay() {
                 )}
               </Button>
               {recipients.length > 0 && (
-                <p className="text-center text-slate-400 text-sm mt-2">
+                <p className="text-center text-gray-400 text-sm mt-3">
                   {recipients.length} recipients • {recipients.reduce((sum, r) => sum + parseFloat(r.amount || '0'), 0).toFixed(2)} USDC
                 </p>
               )}
             </div>
 
             {/* Settings Panel */}
-            <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="bg-gray-800 rounded-lg border border-gray-700">
               <SettingsPanel />
             </div>
 
             {/* System Status */}
-            <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="bg-gray-800 rounded-lg border border-gray-700">
               <SystemStatus />
             </div>
 
             {/* Live Feed */}
-            <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="bg-gray-800 rounded-lg border border-gray-700">
               <LiveFeed />
             </div>
           </div>

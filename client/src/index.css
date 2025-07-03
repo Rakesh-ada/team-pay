@@ -109,26 +109,26 @@
 }
 
 .dark {
-  --background: hsl(222.2, 84%, 2.5%);
+  --background: hsl(222.2, 84%, 7%);
   --foreground: hsl(210, 40%, 98%);
-  --muted: hsl(217.2, 32.6%, 12%);
-  --muted-foreground: hsl(215, 20.2%, 70%);
-  --popover: hsl(222.2, 84%, 4%);
+  --muted: hsl(217.2, 32.6%, 17%);
+  --muted-foreground: hsl(215, 20.2%, 65%);
+  --popover: hsl(222.2, 84%, 7%);
   --popover-foreground: hsl(210, 40%, 98%);
-  --card: hsl(217.2, 32.6%, 8%);
+  --card: hsl(217.2, 32.6%, 12%);
   --card-foreground: hsl(210, 40%, 98%);
-  --border: hsl(217.2, 32.6%, 20%);
-  --input: hsl(217.2, 32.6%, 15%);
-  --primary: hsl(221.2, 83.2%, 58%);
+  --border: hsl(217.2, 32.6%, 17%);
+  --input: hsl(217.2, 32.6%, 17%);
+  --primary: hsl(221.2, 83.2%, 53%);
   --primary-foreground: hsl(210, 40%, 98%);
-  --secondary: hsl(217.2, 32.6%, 12%);
+  --secondary: hsl(217.2, 32.6%, 17%);
   --secondary-foreground: hsl(210, 40%, 98%);
-  --accent: hsl(217.2, 32.6%, 15%);
+  --accent: hsl(217.2, 32.6%, 17%);
   --accent-foreground: hsl(210, 40%, 98%);
-  --destructive: hsl(0, 62.8%, 40%);
+  --destructive: hsl(0, 62.8%, 50%);
   --destructive-foreground: hsl(210, 40%, 98%);
-  --ring: hsl(221.2, 83.2%, 58%);
-  --radius: 0.75rem;
+  --ring: hsl(221.2, 83.2%, 53%);
+  --radius: 0.5rem;
 }
 
 @layer base {
@@ -138,13 +138,7 @@
 
   body {
     @apply font-sans antialiased text-foreground;
-    background: 
-      radial-gradient(ellipse 80% 80% at 50% -20%, rgba(120, 119, 198, 0.3), transparent),
-      radial-gradient(ellipse 80% 80% at 80% 50%, rgba(255, 119, 198, 0.15), transparent),
-      radial-gradient(ellipse 80% 80% at 20% 50%, rgba(74, 222, 128, 0.15), transparent),
-      radial-gradient(ellipse 80% 80% at 50% 120%, rgba(16, 185, 129, 0.2), transparent),
-      linear-gradient(135deg, #000000 0%, #0a0a0f 15%, #1a1b23 30%, #0f172a 50%, #1e293b 70%, #0f172a 85%, #000000 100%);
-    background-attachment: fixed;
+    background-color: #111827;
     min-height: 100vh;
     color: rgba(255, 255, 255, 0.95);
   }

@@ -245,12 +245,12 @@ export default function RecipientManager() {
         <CardHeader className="p-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 glass-light rounded-xl flex items-center justify-center">
-                <Users className="w-5 h-5 text-cyan-400" />
+              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                <Users className="w-5 h-5 text-white" />
               </div>
               <div>
                 <CardTitle className="text-xl font-bold text-white">Team Recipients</CardTitle>
-                <p className="text-slate-400 text-sm">
+                <p className="text-gray-400 text-sm">
                   {recipients.length} recipients • {recipients.reduce((sum, r) => sum + parseFloat(r.amount || '0'), 0).toFixed(2)} USDC total
                 </p>
               </div>
@@ -319,35 +319,35 @@ export default function RecipientManager() {
                     Add Recipient
                   </Button>
                 </DialogTrigger>
-              <DialogContent className="bg-slate-800 border-slate-700">
+              <DialogContent className="bg-gray-800 border-gray-700">
                 <DialogHeader>
                   <DialogTitle className="text-white">Add New Recipient</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   {wallet.isConnected && filteredChains.length < availableChains.length && (
-                    <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-                      <p className="text-sm text-amber-400">
+                    <div className="p-3 bg-yellow-900/20 border border-yellow-700/30 rounded-lg">
+                      <p className="text-sm text-yellow-400">
                         <strong>Note:</strong> Only showing chains with different CCTP domains than your current connected chain. 
                         CCTP doesn't support transfers within the same domain.
                       </p>
                     </div>
                   )}
                   <div>
-                    <label className="text-sm font-medium text-slate-300">Address</label>
+                    <label className="text-sm font-medium text-gray-300">Address</label>
                     <Input
                       value={newRecipient.address}
                       onChange={(e) => setNewRecipient({ ...newRecipient, address: e.target.value })}
                       placeholder="0x..."
-                      className="bg-slate-700 border-slate-600 text-white"
+                      className="bg-gray-700 border-gray-600 text-white"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-slate-300">Chain</label>
+                    <label className="text-sm font-medium text-gray-300">Chain</label>
                     <Select
                       value={newRecipient.chainId.toString()}
                       onValueChange={(value) => setNewRecipient({ ...newRecipient, chainId: parseInt(value) })}
                     >
-                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-slate-700 border-slate-600">
