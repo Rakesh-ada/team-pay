@@ -96,25 +96,22 @@ export class USDCService {
       const feeData = await this.provider.getFeeData();
       const gasPrice = feeData.gasPrice || parseUnits('20', 'gwei');
       
-      // Estimate gas for transfers (approximately 21,000 gas per transfer)
-      const estimatedGas = recipients.length * 21000;
-      
-      const networkFees = gasPrice * BigInt(estimatedGas);
-      const networkFeesUSD = Number(formatEther(networkFees)) * 2000; // Assume ETH = $2000
+      // Convert gas price to Gwei for display
+      const networkFeesGwei = ethers.formatUnits(gasPrice, 'gwei');
 
       return {
-        networkFees: `~$${networkFeesUSD.toFixed(2)}`,
-        cctpFees: '$0.00', // No CCTP fees for same-chain transfers
-        total: `~$${networkFeesUSD.toFixed(2)}`
+        networkFees: `~${parseFloat(networkFeesGwei).toFixed(2)}`,
+        cctpFees: '~0.00', // No CCTP fees for same-chain transfers
+        total: `~${parseFloat(networkFeesGwei).toFixed(2)}`
       };
     } catch (error) {
       console.error('Fee estimation failed:', error);
       
-      // Fallback estimation
+      // Fallback estimation in Gwei
       return {
-        networkFees: '~$5.00',
-        cctpFees: '$0.00',
-        total: '~$5.00'
+        networkFees: '~15.00',
+        cctpFees: '~0.00',
+        total: '~15.00'
       };
     }
   }

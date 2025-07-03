@@ -28,16 +28,22 @@ export default function FeeEstimation() {
         <div className="space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-slate-300">Network Fees</span>
-            <span className="font-medium text-white">{feeEstimation.networkFees}</span>
+            <span className="font-medium text-white">
+              {feeEstimation.networkFees} <span className="text-sm text-slate-400">Gwei</span>
+            </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-slate-300">CCTP Transfer Fees</span>
-            <span className="font-medium text-white">{feeEstimation.cctpFees}</span>
+            <span className="font-medium text-white">
+              {feeEstimation.cctpFees} <span className="text-sm text-slate-400">Gwei</span>
+            </span>
           </div>
           <div className="border-t border-slate-700 pt-3">
             <div className="flex justify-between items-center">
               <span className="font-medium text-white">Total Estimated</span>
-              <span className="font-semibold text-lg text-white">{feeEstimation.total}</span>
+              <span className="font-semibold text-lg text-white">
+                {feeEstimation.total} <span className="text-sm font-normal text-slate-400">Gwei</span>
+              </span>
             </div>
           </div>
         </div>

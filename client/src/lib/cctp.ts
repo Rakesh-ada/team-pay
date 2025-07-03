@@ -473,22 +473,19 @@ export class CCTPService {
       }
 
       // Get real CCTP fees if possible
-      let cctpFeesUSD = 0;
+      let cctpFeesGwei = '0'; // Default to 0 Gwei for CCTP fees
       if (recipients.length > 0) {
         try {
           const network = await this.provider.getNetwork();
           const sourceChainId = Number(network.chainId);
           const uniqueDestinations = Array.from(new Set(recipients.map(r => r.chainId)));
           
-          for (const destChainId of uniqueDestinations) {
-            if (destChainId !== sourceChainId) {
-              const feesData = await this.getBurnFees(sourceChainId, destChainId);
-              const relevantFee = feesData.fees.find(f => f.feeType === transferMethod);
-              if (relevantFee) {
-                const recipientsForChain = recipients.filter(r => r.chainId === destChainId);
-                cctpFeesUSD += parseFloat(relevantFee.fee) * recipientsForChain.length;
-              }
-            }
+          if (transferMethod === 'fast') {
+            // Fast transfers have a flat fee of approximately 15 Gwei
+            cctpFeesGwei = '15';
+          } else {
+            // Standard transfers have no fee
+            cctpFeesGwei = '0';
           }
         } catch (error: any) {
           // Handle network change errors gracefully
@@ -498,16 +495,17 @@ export class CCTPService {
             console.warn('Could not fetch real CCTP fees, using fallback:', error);
           }
           // Fallback fee estimation
-          cctpFeesUSD = transferMethod === 'fast' ? recipients.length * 0.5 : 0;
+          cctpFeesGwei = transferMethod === 'fast' ? '15' : '0';
         }
       }
 
-      const total = networkFeesUSD + cctpFeesUSD;
+      // Calculate total in Gwei
+      const totalGwei = (parseFloat(networkFeesGwei) + parseFloat(cctpFeesGwei)).toString();
 
       return {
-        networkFees: `~$${networkFeesUSD.toFixed(2)}`,
-        cctpFees: `~$${cctpFeesUSD.toFixed(2)}`,
-        total: `~$${total.toFixed(2)}`
+        networkFees: `~${parseFloat(networkFeesGwei).toFixed(2)}`,
+        cctpFees: `~${parseFloat(cctpFeesGwei).toFixed(2)}`,
+        total: `~${parseFloat(totalGwei).toFixed(2)}`
       };
     } catch (error: any) {
       // Handle network change errors gracefully
@@ -517,11 +515,11 @@ export class CCTPService {
         console.error('Fee estimation failed:', error);
       }
       
-      // Fallback estimation
+      // Fallback estimation in Gwei
       return {
-        networkFees: '~$15.00',
-        cctpFees: transferMethod === 'fast' ? '~$5.00' : '~$0.00',
-        total: transferMethod === 'fast' ? '~$20.00' : '~$15.00'
+        networkFees: '~15.00',
+        cctpFees: transferMethod === 'fast' ? '~5.00' : '~0.00',
+        total: transferMethod === 'fast' ? '~20.00' : '~15.00'
       };
     }
   }
