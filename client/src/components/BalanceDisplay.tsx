@@ -83,9 +83,7 @@ export default function BalanceDisplay() {
           {/* Testnet USDC Faucet Helper */}
           {isTestnet && currentBalance === 0 && (
             <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-              <p className="text-sm text-blue-300 mb-2">
-                Need testnet USDC? Get some from the Circle faucet:
-              </p>
+              
               <Button 
                 variant="outline" 
                 size="sm" 
