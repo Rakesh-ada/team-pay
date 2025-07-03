@@ -61,14 +61,13 @@ export default function TeamPay() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Team Pay</h1>
-                <p className="text-gray-400 text-xs">Bulk USDC transfers</p>
+                <p className="text-gray-400 text-xs">Organize Your  USDC Payment</p>
               </div>
             </div>
             <WalletConnect />
           </div>
         </div>
       </header>
-
       {/* Network Mismatch Warning */}
       {hasNetworkMismatch && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -86,7 +85,6 @@ export default function TeamPay() {
           </div>
         </div>
       )}
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
