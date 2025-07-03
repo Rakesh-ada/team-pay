@@ -368,7 +368,6 @@ export default function RecipientManager() {
                 </Dialog>
             </div>
           </div>
-          </div>
         </CardHeader>
       <CardContent className="p-0">
         {recipients.length > 0 ? (
