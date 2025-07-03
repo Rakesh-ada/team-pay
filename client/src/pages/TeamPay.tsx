@@ -91,6 +91,11 @@ export default function TeamPay() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
+            {/* System Status */}
+            <div className="bg-gray-800 rounded-lg border border-gray-700">
+              <SystemStatus />
+            </div>
+
             {/* Transfer Method Selector */}
             <div className="bg-gray-800 rounded-lg border border-gray-700">
               <TransferMethodSelector />
@@ -153,11 +158,6 @@ export default function TeamPay() {
             {/* Settings Panel */}
             <div className="bg-gray-800 rounded-lg border border-gray-700">
               <SettingsPanel />
-            </div>
-
-            {/* System Status */}
-            <div className="bg-gray-800 rounded-lg border border-gray-700">
-              <SystemStatus />
             </div>
 
             {/* Live Feed */}
