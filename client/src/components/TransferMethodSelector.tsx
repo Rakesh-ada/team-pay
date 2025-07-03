@@ -12,7 +12,7 @@ export default function TransferMethodSelector() {
         <CardTitle className="text-lg font-semibold text-white">Transfer Method</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
           {TRANSFER_METHODS.map((method) => (
             <div
               key={method.type}
