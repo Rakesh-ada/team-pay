@@ -250,9 +250,7 @@ export default function RecipientManager() {
               </div>
               <div>
                 <CardTitle className="text-xl font-bold text-white">Team Recipients</CardTitle>
-                <p className="text-gray-400 text-sm">
-                  {recipients.length} recipients • {recipients.reduce((sum, r) => sum + parseFloat(r.amount || '0'), 0).toFixed(2)} USDC total
-                </p>
+                
               </div>
             </div>
             
