@@ -147,17 +147,6 @@ export class WalletService {
     }
   }
 
-  async hasZeroETHBalance(address: string, chainId: number): Promise<boolean> {
-    try {
-      const balance = await this.getETHBalance(address, chainId);
-      return parseFloat(balance) === 0;
-    } catch (error) {
-      console.error('Error checking ETH balance:', error);
-      // Return false to avoid showing warning on errors
-      return false;
-    }
-  }
-
   getProvider() {
     return this.provider;
   }

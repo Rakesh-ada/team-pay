@@ -10,7 +10,7 @@ import { SUPPORTED_CHAINS, TESTNET_CHAINS } from '@/lib/constants';
 import { CSVUtils } from '@/lib/csvUtils';
 import { useToast } from '@/hooks/use-toast';
 import { walletService } from '@/lib/wallet';
-import { Plus, Upload, Download, Trash2, Loader2, Clock, CheckCircle, AlertCircle, Activity, Zap, FileText, Users, AlertTriangle } from 'lucide-react';
+import { Plus, Upload, Download, Trash2, Loader2, Clock, CheckCircle, AlertCircle, Activity, Zap, FileText, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function RecipientManager() {
@@ -25,7 +25,6 @@ export default function RecipientManager() {
     amount: ''
   });
   const [statusUpdateTimestamps, setStatusUpdateTimestamps] = useState<{[key: string]: Date}>({});
-  const [recipientsWithZeroETH, setRecipientsWithZeroETH] = useState<{[key: string]: boolean}>({});
 
   const availableChains = isTestnet ? TESTNET_CHAINS : SUPPORTED_CHAINS;
   
@@ -56,35 +55,6 @@ export default function RecipientManager() {
       }
     });
   }, [recipients]);
-
-  // Check ETH balances for all recipients
-  useEffect(() => {
-    const checkETHBalances = async () => {
-      if (!wallet.isConnected || recipients.length === 0) return;
-      
-      const results: {[key: string]: boolean} = {};
-      
-      for (const recipient of recipients) {
-        try {
-          if (recipient.status === 'ready') {
-            const hasZeroETH = await walletService.hasZeroETHBalance(recipient.address, recipient.chainId);
-            results[recipient.id] = hasZeroETH;
-          }
-        } catch (error) {
-          console.error(`Failed to check ETH balance for recipient ${recipient.id}:`, error);
-        }
-      }
-      
-      setRecipientsWithZeroETH(results);
-    };
-    
-    checkETHBalances();
-    
-    // Set up interval to check balances periodically (every 30 seconds)
-    const intervalId = setInterval(checkETHBalances, 30000);
-    
-    return () => clearInterval(intervalId);
-  }, [recipients, wallet.isConnected]);
 
   const handleAddRecipient = () => {
     const chain = availableChains.find(c => c.id === newRecipient.chainId)!;
@@ -424,21 +394,6 @@ export default function RecipientManager() {
                           <div className="font-mono text-sm text-white">
                             {recipient.address.slice(0, 20)}...
                           </div>
-                          
-                          {recipientsWithZeroETH[recipient.id] && (
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div className="ml-2">
-                                    <AlertTriangle className="w-4 h-4 text-yellow-400" />
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent className="bg-gray-800 border-gray-700 text-white">
-                                  <p>Warning: This address has 0 ETH balance on {recipient.chainName}. Gas fees may fail.</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          )}
                         </div>
                       </div>
                     </td>
